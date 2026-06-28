@@ -47,11 +47,11 @@
                     <div class="mt-10">
                         {{-- Category Label (skip for first/trusted type since main title already says it) --}}
                         @if($type !== 'trusted')
-                        <div class="flex items-center gap-4 mb-6">
-                            <span class="text-xs text-gray-400 uppercase tracking-[0.15em] font-semibold whitespace-nowrap">
+                        <div class="text-center mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-[0.15em] font-semibold">
                                 {{ $typeLabels[$type] ?? ucfirst($type) }}
                             </span>
-                            <div class="flex-1 h-px bg-border-dark"></div>
+                            <div class="mt-2 h-px bg-border-dark max-w-xs mx-auto"></div>
                         </div>
                         @endif
 
