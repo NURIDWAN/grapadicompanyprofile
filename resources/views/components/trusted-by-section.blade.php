@@ -56,7 +56,7 @@
                         @endif
 
                         {{-- Logos Grid - uniform size, no background --}}
-                        <div class="{{ $type === 'media_covered' ? 'brand-grid brand-grid-centered' : 'brand-grid' }}">
+                        <div class="{{ $type === 'media' ? 'brand-grid brand-grid-centered' : 'brand-grid' }}">
                             @foreach($typeBrands as $brand)
                                 @php $logoUrl = $getLogoUrl($brand); @endphp
                                 <div class="brand-card flex items-center justify-center p-2 group">
