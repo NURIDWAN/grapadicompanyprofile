@@ -28,7 +28,7 @@
     <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
 
         {{-- Main Title --}}
-        <div class="text-center mb-4">
+        <div class="flex flex-col items-center mb-4">
             <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display mb-3">
                 Trusted By
             </p>
