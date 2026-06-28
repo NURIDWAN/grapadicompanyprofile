@@ -66,6 +66,13 @@ class PageController extends Controller
             'cta_url' => SiteSetting::get('strategix_cta_url', 'https://strategix.grapadi.com'),
         ];
 
+        // Latest Articles for News Section (8 articles)
+        $latestArticles = Article::with(['category', 'author'])
+            ->published()
+            ->orderBy('published_at', 'desc')
+            ->take(8)
+            ->get();
+
         // Director Section
         $director = [
             'title' => SiteSetting::get('director_title', 'Director'),
@@ -82,7 +89,8 @@ class PageController extends Controller
             'hero',
             'faqs',
             'strategix',
-            'director'
+            'director',
+            'latestArticles'
         ));
     }
 

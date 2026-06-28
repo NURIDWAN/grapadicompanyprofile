@@ -187,7 +187,52 @@
         </section>
         @endif
 
-        {{-- 6. FAQ Section --}}
+        {{-- 6. Latest News / Berita Section --}}
+        @if($latestArticles->isNotEmpty())
+            <section class="py-8 lg:py-14">
+                <div class="px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+                    {{-- Section header --}}
+                    <div class="text-center mb-8">
+                        <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display mb-4">
+                            Berita & Artikel
+                        </p>
+                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold font-display text-white leading-tight">
+                            Insight Terbaru dari Kami
+                        </h2>
+                        <p class="text-gray-400 mt-3 max-w-2xl mx-auto">
+                            Temukan artikel, analisis, dan insight terbaru seputar bisnis, investasi, dan strategi perusahaan.
+                        </p>
+                    </div>
+
+                    {{-- Article cards grid - 4 columns --}}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        @foreach($latestArticles as $article)
+                            <x-article-card
+                                :title="$article->title"
+                                :image="$article->image_display"
+                                :date="$article->published_at?->format('d M Y')"
+                                :link="'/' . $article->slug"
+                                :category="$article->category?->category_name"
+                                :categorySlug="$article->category?->slug"
+                                :excerpt="$article->excerpt_display"
+                                :readingTime="$article->reading_time_display"
+                            />
+                        @endforeach
+                    </div>
+
+                    {{-- View all link --}}
+                    <div class="text-center mt-8">
+                        <a href="/blog"
+                           class="inline-flex items-center gap-2 border border-border-dark hover:border-primary/50 text-white hover:text-primary py-3 px-6 rounded-lg transition-all duration-200 text-sm font-medium min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark">
+                            Lihat Semua Artikel
+                            <span class="material-icons-outlined text-base">arrow_forward</span>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        @endif
+
+        {{-- 7. FAQ Section --}}
         @if(!empty($faqs))
             <section class="py-8 lg:py-14 px-6 sm:px-8 lg:px-12">
                 <div class="max-w-7xl mx-auto">
@@ -196,7 +241,7 @@
             </section>
         @endif
 
-        {{-- 7. Final CTA Banner --}}
+        {{-- 8. Final CTA Banner --}}
         <section class="py-8 lg:py-12 px-6 sm:px-8 lg:px-12">
             <div class="max-w-7xl mx-auto border border-border-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-dark/40">
                 <div class="flex items-center gap-4">

@@ -56,7 +56,7 @@
                         @endif
 
                         {{-- Logos Grid - uniform size, no background --}}
-                        <div class="brand-grid">
+                        <div class="{{ $type === 'media_covered' ? 'brand-grid brand-grid-centered' : 'brand-grid' }}">
                             @foreach($typeBrands as $brand)
                                 @php $logoUrl = $getLogoUrl($brand); @endphp
                                 <div class="brand-card flex items-center justify-center p-2 group">
@@ -180,6 +180,30 @@
     @media (min-width: 1024px) {
         .brand-grid {
             grid-template-columns: repeat(8, minmax(0, 1fr));
+        }
+    }
+    .brand-grid-centered {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .brand-grid-centered .brand-card {
+        width: calc(25% - 0.75rem);
+    }
+    @media (min-width: 640px) {
+        .brand-grid-centered .brand-card {
+            width: calc(20% - 0.75rem);
+        }
+    }
+    @media (min-width: 768px) {
+        .brand-grid-centered .brand-card {
+            width: calc(16.666% - 0.75rem);
+        }
+    }
+    @media (min-width: 1024px) {
+        .brand-grid-centered .brand-card {
+            width: calc(12.5% - 0.75rem);
         }
     }
 </style>
