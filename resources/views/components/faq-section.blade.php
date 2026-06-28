@@ -7,8 +7,8 @@
 <section class="py-6 md:py-10">
     {{-- Section Title --}}
     <div class="text-center mb-8 md:mb-10">
-        <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display mb-4">FAQ</p>
-        <h2 class="text-3xl md:text-4xl font-display font-bold text-white">
+        <p class="text-xs text-primary uppercase tracking-[0.2em] font-semibold font-display mb-3">FAQ</p>
+        <h2 class="text-2xl md:text-3xl font-display font-bold text-white">
             {{ $title }}
         </h2>
     </div>
@@ -32,9 +32,9 @@
                     @click="isOpen = !isOpen"
                     @keydown.enter.prevent="isOpen = !isOpen"
                     @keydown.space.prevent="isOpen = !isOpen"
-                    class="w-full flex items-center justify-between p-5 md:p-6 text-left cursor-pointer select-none min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-dark rounded-xl"
+                    class="w-full flex items-center justify-between p-4 md:p-5 text-left cursor-pointer select-none min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-dark rounded-xl"
                 >
-                    <span class="text-base md:text-lg font-semibold text-white pr-4">
+                    <span class="text-sm md:text-base font-semibold text-white pr-4">
                         {{ $faq['question'] }}
                     </span>
                     <span
@@ -52,7 +52,7 @@
                     x-collapse
                     x-cloak
                 >
-                    <div class="px-5 md:px-6 pb-5 md:pb-6 text-gray-400 leading-relaxed">
+                    <div class="px-4 md:px-5 pb-4 md:pb-5 text-sm text-gray-400 leading-relaxed">
                         {{ $faq['answer'] }}
                     </div>
                 </div>

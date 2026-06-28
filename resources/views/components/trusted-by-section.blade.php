@@ -55,11 +55,11 @@
                         </div>
                         @endif
 
-                        {{-- Logos Grid - uniform size, no background --}}
-                        <div class="brand-grid">
+                        {{-- Logos Grid - uniform size, no background, centered --}}
+                        <div class="flex flex-wrap justify-center gap-3">
                             @foreach($typeBrands as $brand)
                                 @php $logoUrl = $getLogoUrl($brand); @endphp
-                                <div class="brand-card flex items-center justify-center p-2 group">
+                                <div class="w-32 h-16 flex items-center justify-center p-2 group bg-surface-dark/30 rounded-lg border border-border-dark/30 hover:border-primary/50 transition-all duration-300">
                                     @if($logoUrl)
                                         @if($brand->url)
                                             <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full h-full" aria-label="{{ $brand->name }}">
