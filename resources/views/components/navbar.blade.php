@@ -37,7 +37,7 @@ $navItems = [
     role="navigation"
     aria-label="Main navigation"
 >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         <div class="flex justify-between items-center h-20">
             {{-- Logo --}}
             <div class="flex items-center">

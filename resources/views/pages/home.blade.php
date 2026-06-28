@@ -17,59 +17,115 @@
             :stats="$hero['stats']"
         />
 
-        {{-- 2. Director Section --}}
-        <section class="py-12 lg:py-20 bg-background-dark">
-            <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                {{-- Left: Director Info --}}
-                <div data-animate="fade-in-left">
-                    <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display italic mb-2">
-                        {{ $director['title'] }}
-                    </p>
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white mb-4 leading-tight">
-                        {{ $director['name'] }}
-                    </h2>
-
-                    @if($director['linkedin'])
-                    <div class="mb-6">
-                        <a href="{{ $director['linkedin'] }}" target="_blank" rel="noopener noreferrer" 
-                           class="inline-flex text-[#0077b5] hover:text-[#005582] transition min-h-[44px] min-w-[44px] items-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-dark rounded"
-                           aria-label="LinkedIn Profile">
-                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                            </svg>
-                        </a>
+        {{-- 2. About the Founder Section --}}
+        <section class="py-12 lg:py-20">
+            <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+                <div style="display: flex; flex-direction: row; gap: 3rem; align-items: flex-start;" class="about-founder-wrap">
+                    {{-- Left: Director Image --}}
+                    <div style="width: 300px; min-width: 300px;" class="about-founder-img" data-animate="fade-in-left">
+                        @php
+                            $directorImage = $director['image'];
+                            if ($directorImage && !str_starts_with($directorImage, 'http')) {
+                                $directorImageUrl = str_starts_with($directorImage, 'image/')
+                                    ? asset($directorImage)
+                                    : asset('storage/' . $directorImage);
+                            } else {
+                                $directorImageUrl = $directorImage;
+                            }
+                        @endphp
+                        <div class="relative">
+                            {{-- Gold accent border at top --}}
+                            <div class="absolute -top-1 left-4 right-4 h-1 bg-primary rounded-full z-10"></div>
+                            <div class="rounded-2xl overflow-hidden border border-border-dark shadow-2xl">
+                                <img 
+                                    src="{{ $directorImageUrl }}" 
+                                    alt="{{ $director['name'] }}" 
+                                    style="width: 100%; height: auto; display: block;"
+                                    class="object-cover"
+                                    loading="lazy"
+                                >
+                            </div>
+                        </div>
                     </div>
-                    @endif
 
-                    <p class="text-gray-300 leading-relaxed text-base lg:text-lg">
-                        {{ $director['description'] }}
-                    </p>
-                </div>
+                    {{-- Right: Director Info --}}
+                    <div style="flex: 1; min-width: 0;" data-animate="fade-in-right" data-delay="200">
+                        {{-- Tag --}}
+                        <p class="text-xs text-gray-400 uppercase tracking-[0.2em] font-semibold mb-3">
+                            About the Founder
+                        </p>
 
-                {{-- Right: Director Image --}}
-                <div class="relative rounded-2xl overflow-hidden shadow-2xl" data-animate="fade-in-right" data-delay="200">
-                    @php
-                        $directorImage = $director['image'];
-                        if ($directorImage && !str_starts_with($directorImage, 'http')) {
-                            $directorImageUrl = str_starts_with($directorImage, 'image/')
-                                ? asset($directorImage)
-                                : asset('storage/' . $directorImage);
-                        } else {
-                            $directorImageUrl = $directorImage;
-                        }
-                    @endphp
-                    <img 
-                        src="{{ $directorImageUrl }}" 
-                        alt="{{ $director['name'] }}" 
-                        class="w-full h-auto object-cover"
-                        loading="lazy"
-                    >
+                        {{-- Name + LinkedIn --}}
+                        <div class="flex flex-wrap items-center gap-3 mb-3">
+                            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white leading-tight">
+                                {{ $director['name'] }}
+                            </h2>
+                            @if($director['linkedin'])
+                            <a href="{{ $director['linkedin'] }}" target="_blank" rel="noopener noreferrer" 
+                               class="inline-flex text-[#0077b5] hover:text-[#005582] transition min-h-[44px] min-w-[44px] items-center justify-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded"
+                               aria-label="LinkedIn Profile">
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            @endif
+                        </div>
+
+                        {{-- Subtitle/Role --}}
+                        <p class="text-base md:text-lg font-display mb-6">
+                            <span class="text-white font-semibold">Property, Investment & Corporate</span>
+                            <span class="text-primary font-semibold"> Strategy Advisor</span>
+                        </p>
+
+                        {{-- Description --}}
+                        <div class="text-gray-400 leading-relaxed text-sm md:text-base space-y-4 mb-8">
+                            <p>{{ $director['description'] }}</p>
+                        </div>
+
+                        {{-- Signature --}}
+                        <div class="mb-6">
+                            <p style="font-family: 'Dancing Script', cursive; font-size: 2rem; color: #ffffff;">
+                                {{ explode(',', $director['name'])[0] }}
+                            </p>
+                        </div>
+
+                        {{-- Action Buttons --}}
+                        <div class="flex flex-wrap items-center gap-4">
+                            <a href="{{ $director['linkedin'] ?: '/about' }}" target="{{ $director['linkedin'] ? '_blank' : '_self' }}" rel="noopener noreferrer"
+                               class="inline-flex items-center gap-2 border border-border-dark hover:border-primary/50 text-white hover:text-primary py-3 px-6 rounded-lg transition-all duration-200 text-sm font-medium min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark">
+                                View Profile
+                                <span class="material-icons-outlined text-base">arrow_forward</span>
+                            </a>
+                            @if($director['linkedin'])
+                            <a href="{{ $director['linkedin'] }}" target="_blank" rel="noopener noreferrer"
+                               class="inline-flex items-center justify-center w-11 h-11 rounded-lg border border-border-dark hover:border-[#0077b5] text-gray-400 hover:text-[#0077b5] transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark"
+                               aria-label="LinkedIn Profile">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                                </svg>
+                            </a>
+                            @endif
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
+        <style>
+            @media (max-width: 767px) {
+                .about-founder-wrap {
+                    flex-direction: column !important;
+                }
+                .about-founder-img {
+                    width: 100% !important;
+                    min-width: unset !important;
+                    max-width: 300px;
+                }
+            }
+        </style>
+
         {{-- 3. Trusted By + CTA --}}
-        <x-trusted-by-section :brands="$trustedBrands" />
+        <x-trusted-by-section :brands="$trustedBrands" :brandsByType="$brandsByType ?? collect()" />
 
         {{-- 4. Services Section --}}
         @if($services->isNotEmpty())
@@ -130,7 +186,7 @@
                 <p class="text-gray-400 text-lg leading-relaxed max-w-3xl mx-auto mb-8" data-animate="fade-in-up" data-delay="200">
                     {{ $strategix['description'] }}
                 </p>
-                <a href="{{ $strategix['cta_url'] }}" target="_blank" rel="noopener"
+                <a href="https://strategix.grapadikonsultan.co.id" target="_blank" rel="noopener"
                    class="inline-flex items-center gap-2 bg-primary hover:bg-primary-400 text-background-dark font-bold py-4 px-8 rounded-lg transition-colors duration-200 text-base min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-background-dark"
                    data-animate="fade-in-up" data-delay="300">
                     {{ $strategix['cta_text'] }}

@@ -90,6 +90,8 @@ class BrandResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'trusted' => 'success',
                         'media' => 'info',
+                        'partner' => 'warning',
+                        'client' => 'primary',
                         default => 'gray',
                     }),
                 Tables\Columns\IconColumn::make('is_active')

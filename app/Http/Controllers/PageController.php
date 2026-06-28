@@ -20,10 +20,10 @@ class PageController extends Controller
     {
         $services = Service::orderBy('service_name')->take(8)->get();
         
-        // Get trusted brands
-        $trustedBrands = Brand::active()->ordered()
-            ->where('type', Brand::TYPE_TRUSTED)
-            ->get();
+        // Get all active brands grouped by type
+        $allBrands = Brand::active()->ordered()->get();
+        $trustedBrands = $allBrands->where('type', Brand::TYPE_TRUSTED);
+        $brandsByType = $allBrands->groupBy('type');
 
         // Get Hero Section settings
         $heroStats = SiteSetting::get('hero_stats', null);
@@ -77,7 +77,8 @@ class PageController extends Controller
 
         return view('pages.home', compact(
             'services', 
-            'trustedBrands', 
+            'trustedBrands',
+            'brandsByType',
             'hero',
             'faqs',
             'strategix',

@@ -1,9 +1,10 @@
 @props([
     'brands' => collect([]),
+    'brandsByType' => collect([]),
 ])
 
 @php
-    $hasBrands = $brands && $brands->count() > 0;
+    use App\Models\Brand;
 
     $getLogoUrl = function($brand) {
         if (!empty($brand->logo)) {
@@ -15,60 +16,122 @@
         return null;
     };
 
-    // Default logos as fallback
-    $defaultLogos = [
-        ['name' => 'Sinarmas', 'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Sinar_Mas_Group_Logo.svg/320px-Sinar_Mas_Group_Logo.svg.png'],
-        ['name' => 'Ciputra', 'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Ciputra_Development_logo.svg/320px-Ciputra_Development_logo.svg.png'],
-        ['name' => 'Jaya Property', 'url' => 'https://upload.wikimedia.org/wikipedia/id/thumb/a/ac/Logo_Jaya_Real_Property.svg/320px-Logo_Jaya_Real_Property.svg.png'],
-        ['name' => 'Pollux', 'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Pollux_Properti_Indonesia_Logo.png/320px-Pollux_Properti_Indonesia_Logo.png'],
-        ['name' => 'WIKA', 'url' => 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Wijaya_Karya.svg/320px-Wijaya_Karya.svg.png'],
-    ];
+    // Use brandsByType if available, otherwise fall back to brands prop
+    $hasBrandsByType = $brandsByType && $brandsByType->count() > 0;
+    $hasBrands = $brands && $brands->count() > 0;
+
+    // Category labels mapping
+    $typeLabels = Brand::TYPE_OPTIONS;
 @endphp
 
-<section class="py-8 lg:py-10 border-t border-border-dark">
+<section class="py-12 lg:py-16 border-t border-border-dark">
     <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
-        {{-- Title --}}
-        <p class="text-center text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display mb-6">
-            Trusted By
-        </p>
 
-        {{-- Logos row --}}
-        <div class="flex flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-16 mb-8">
-            @if($hasBrands)
-                @foreach($brands as $brand)
-                    @php $logoUrl = $getLogoUrl($brand); @endphp
-                    @if($logoUrl)
-                        <div class="flex items-center justify-center h-12">
-                            <img
-                                src="{{ $logoUrl }}"
-                                alt="{{ $brand->name }}"
-                                class="h-8 md:h-10 w-auto object-contain opacity-70 brightness-200 grayscale hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300"
-                                loading="lazy"
-                            >
-                        </div>
-                    @endif
-                @endforeach
-            @else
-                @foreach($defaultLogos as $logo)
-                    <div class="flex items-center justify-center h-12">
-                        <img
-                            src="{{ $logo['url'] }}"
-                            alt="{{ $logo['name'] }}"
-                            class="h-8 md:h-10 w-auto object-contain opacity-70 brightness-200 grayscale hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300"
-                            loading="lazy"
-                        >
-                    </div>
-                @endforeach
-            @endif
+        {{-- Main Title --}}
+        <div class="text-center mb-4">
+            <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display mb-3">
+                Trusted By
+            </p>
+            <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold font-display text-white mb-2">
+                Dipercaya oleh 100+ Perusahaan
+            </h2>
+            <p class="text-sm text-gray-400 italic">
+                Dan ratusan perusahaan lainnya di berbagai sektor
+            </p>
         </div>
 
-        {{-- Subtitle --}}
-        <p class="text-center text-sm text-gray-500 italic mb-8">
-            Dan ratusan perusahaan lainnya di berbagai sektor
+        @if($hasBrandsByType)
+            {{-- Display each brand category --}}
+            @foreach($brandsByType as $type => $typeBrands)
+                @if($typeBrands->count() > 0)
+                    <div class="mt-10">
+                        {{-- Category Label --}}
+                        <div class="flex items-center gap-4 mb-6">
+                            <span class="text-xs text-gray-400 uppercase tracking-[0.15em] font-semibold whitespace-nowrap">
+                                {{ $typeLabels[$type] ?? ucfirst($type) }}
+                            </span>
+                            <div class="flex-1 h-px bg-border-dark"></div>
+                        </div>
+
+                        {{-- Logos Grid - uniform card size, 8 cols --}}
+                        <div class="brand-grid">
+                            @foreach($typeBrands as $brand)
+                                @php $logoUrl = $getLogoUrl($brand); @endphp
+                                <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 group">
+                                    @if($logoUrl)
+                                        @if($brand->url)
+                                            <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full h-full" aria-label="{{ $brand->name }}">
+                                                <img
+                                                    src="{{ $logoUrl }}"
+                                                    alt="{{ $brand->name }}"
+                                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                                    loading="lazy"
+                                                >
+                                            </a>
+                                        @else
+                                            <img
+                                                src="{{ $logoUrl }}"
+                                                alt="{{ $brand->name }}"
+                                                class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                                loading="lazy"
+                                            >
+                                        @endif
+                                    @else
+                                        {{-- Text fallback when no logo --}}
+                                        <span class="text-xs text-gray-400 group-hover:text-white font-medium text-center leading-tight transition-colors duration-300">
+                                            {{ $brand->name }}
+                                        </span>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            @endforeach
+        @elseif($hasBrands)
+            {{-- Fallback: display brands without grouping (backward compatible) --}}
+            <div class="mt-10">
+                <div class="brand-grid">
+                    @foreach($brands as $brand)
+                        @php $logoUrl = $getLogoUrl($brand); @endphp
+                        <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 group">
+                            @if($logoUrl)
+                                <img
+                                    src="{{ $logoUrl }}"
+                                    alt="{{ $brand->name }}"
+                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                    loading="lazy"
+                                >
+                            @else
+                                <span class="text-xs text-gray-400 group-hover:text-white font-medium text-center leading-tight transition-colors duration-300">
+                                    {{ $brand->name }}
+                                </span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            {{-- No brands at all - show placeholder --}}
+            <div class="mt-10">
+                <div class="brand-grid">
+                    @for($i = 0; $i < 8; $i++)
+                        <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 animate-pulse">
+                            <div class="w-12 h-6 bg-white/10 rounded"></div>
+                        </div>
+                    @endfor
+                </div>
+            </div>
+        @endif
+
+        {{-- Footer note --}}
+        <p class="text-center text-xs text-gray-500 mt-8 flex items-center justify-center gap-2">
+            <span class="material-icons-outlined text-sm">verified</span>
+            Bergabunglah bersama perusahaan-perusahaan terkemuka di Indonesia
         </p>
 
         {{-- CTA Banner --}}
-        <div class="border border-border-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-dark/40">
+        <div class="mt-10 border border-border-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-dark/40">
             <div class="flex items-center gap-4">
                 <div class="w-12 h-12 rounded-full border-2 border-primary flex items-center justify-center shrink-0">
                     <span class="material-icons-outlined text-primary text-xl">calendar_today</span>
@@ -92,3 +155,29 @@
         </div>
     </div>
 </section>
+
+<style>
+    .brand-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+    .brand-card {
+        height: 5rem;
+    }
+    @media (min-width: 640px) {
+        .brand-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+    }
+    @media (min-width: 768px) {
+        .brand-grid {
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+        }
+    }
+    @media (min-width: 1024px) {
+        .brand-grid {
+            grid-template-columns: repeat(8, minmax(0, 1fr));
+        }
+    }
+</style>

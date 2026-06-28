@@ -85,26 +85,28 @@
             </div>
         </div>
 
-        {{-- Stats Cards --}}
+        {{-- Stats Bar --}}
         @if(is_array($stats) && count($stats) > 0)
         <div class="pb-8 lg:pb-10">
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                @foreach($stats as $stat)
-                <div class="border border-border-dark rounded-xl p-4 text-center bg-surface-dark/60 backdrop-blur-sm">
-                    @if(isset($stat['icon']))
-                    <span class="material-icons-outlined text-2xl text-primary mb-2 block">{{ $stat['icon'] }}</span>
-                    @endif
-                    @if(isset($stat['number']))
-                    <p class="text-2xl md:text-3xl font-bold font-display text-white mb-1">{{ $stat['number'] }}</p>
-                    @endif
-                    @if(isset($stat['label']))
-                    <p class="text-sm font-semibold text-primary mb-2">{{ $stat['label'] }}</p>
-                    @endif
-                    @if(isset($stat['description']))
-                    <p class="text-xs text-gray-500 leading-relaxed">{{ $stat['description'] }}</p>
-                    @endif
+            <div class="border border-border-dark rounded-2xl bg-surface-dark/80 backdrop-blur-sm overflow-hidden">
+                <div class="grid grid-cols-2 lg:grid-cols-4 divide-x divide-border-dark">
+                    @foreach($stats as $stat)
+                    <div class="p-5 lg:p-6 text-center">
+                        @if(isset($stat['icon']))
+                        <span class="material-icons-outlined text-xl text-primary mb-2 block">{{ $stat['icon'] }}</span>
+                        @endif
+                        @if(isset($stat['number']))
+                        <p class="text-2xl md:text-3xl lg:text-4xl font-bold font-display text-white mb-1">{{ $stat['number'] }}</p>
+                        @endif
+                        @if(isset($stat['label']))
+                        <p class="text-xs font-bold text-white uppercase tracking-wide mb-1">{{ $stat['label'] }}</p>
+                        @endif
+                        @if(isset($stat['description']))
+                        <p class="text-xs text-gray-500">{{ $stat['description'] }}</p>
+                        @endif
+                    </div>
+                    @endforeach
                 </div>
-                @endforeach
             </div>
         </div>
         @endif

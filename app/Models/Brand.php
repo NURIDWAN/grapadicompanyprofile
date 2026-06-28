@@ -26,10 +26,14 @@ class Brand extends Model
 
     public const TYPE_TRUSTED = 'trusted';
     public const TYPE_MEDIA = 'media';
+    public const TYPE_PARTNER = 'partner';
+    public const TYPE_CLIENT = 'client';
 
     public const TYPE_OPTIONS = [
-        self::TYPE_TRUSTED => 'Trusted By Industry Leaders',
+        self::TYPE_TRUSTED => 'Trusted By',
         self::TYPE_MEDIA => 'Media Covered',
+        self::TYPE_PARTNER => 'Strategic Partner',
+        self::TYPE_CLIENT => 'Our Clients',
     ];
 
     /**
@@ -54,6 +58,22 @@ class Brand extends Model
     public function scopeMedia(Builder $query): Builder
     {
         return $query->where('type', self::TYPE_MEDIA);
+    }
+
+    /**
+     * Scope for partner brands (Strategic Partner)
+     */
+    public function scopePartner(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_PARTNER);
+    }
+
+    /**
+     * Scope for client brands (Our Clients)
+     */
+    public function scopeClient(Builder $query): Builder
+    {
+        return $query->where('type', self::TYPE_CLIENT);
     }
 
     /**
