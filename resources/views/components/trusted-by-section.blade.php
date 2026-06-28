@@ -45,26 +45,28 @@
             @foreach($brandsByType as $type => $typeBrands)
                 @if($typeBrands->count() > 0)
                     <div class="mt-10">
-                        {{-- Category Label --}}
+                        {{-- Category Label (skip for first/trusted type since main title already says it) --}}
+                        @if($type !== 'trusted')
                         <div class="flex items-center gap-4 mb-6">
                             <span class="text-xs text-gray-400 uppercase tracking-[0.15em] font-semibold whitespace-nowrap">
                                 {{ $typeLabels[$type] ?? ucfirst($type) }}
                             </span>
                             <div class="flex-1 h-px bg-border-dark"></div>
                         </div>
+                        @endif
 
-                        {{-- Logos Grid - uniform card size, 8 cols --}}
+                        {{-- Logos Grid - uniform size, no background --}}
                         <div class="brand-grid">
                             @foreach($typeBrands as $brand)
                                 @php $logoUrl = $getLogoUrl($brand); @endphp
-                                <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 group">
+                                <div class="brand-card flex items-center justify-center p-2 group">
                                     @if($logoUrl)
                                         @if($brand->url)
                                             <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-full h-full" aria-label="{{ $brand->name }}">
                                                 <img
                                                     src="{{ $logoUrl }}"
                                                     alt="{{ $brand->name }}"
-                                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-70 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300"
                                                     loading="lazy"
                                                 >
                                             </a>
@@ -72,7 +74,7 @@
                                             <img
                                                 src="{{ $logoUrl }}"
                                                 alt="{{ $brand->name }}"
-                                                class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                                class="max-h-full max-w-full w-auto h-auto object-contain opacity-70 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
                                                 loading="lazy"
                                             >
                                         @endif
@@ -89,17 +91,17 @@
                 @endif
             @endforeach
         @elseif($hasBrands)
-            {{-- Fallback: display brands without grouping (backward compatible) --}}
+            {{-- Fallback: display brands without grouping --}}
             <div class="mt-10">
                 <div class="brand-grid">
                     @foreach($brands as $brand)
                         @php $logoUrl = $getLogoUrl($brand); @endphp
-                        <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 hover:bg-white/10 hover:border-primary/30 transition-all duration-300 group">
+                        <div class="brand-card flex items-center justify-center p-2 group">
                             @if($logoUrl)
                                 <img
                                     src="{{ $logoUrl }}"
                                     alt="{{ $brand->name }}"
-                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-60 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
+                                    class="max-h-full max-w-full w-auto h-auto object-contain opacity-70 grayscale group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300"
                                     loading="lazy"
                                 >
                             @else
@@ -116,7 +118,7 @@
             <div class="mt-10">
                 <div class="brand-grid">
                     @for($i = 0; $i < 8; $i++)
-                        <div class="brand-card flex items-center justify-center bg-white/5 border border-border-dark rounded-lg p-3 animate-pulse">
+                        <div class="brand-card flex items-center justify-center p-2 animate-pulse">
                             <div class="w-12 h-6 bg-white/10 rounded"></div>
                         </div>
                     @endfor
