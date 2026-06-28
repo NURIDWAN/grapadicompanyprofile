@@ -17,7 +17,7 @@ $navItems = [
     ['label' => 'Services', 'url' => url('/services'), 'active' => str_starts_with($currentRoute, 'services')],
     ['label' => 'Portfolio', 'url' => url('/portfolio'), 'active' => $currentRoute === 'portfolio'],
     ['label' => 'Blog', 'url' => url('/blog'), 'active' => str_starts_with($currentRoute, 'blog')],
-    ['label' => 'Strategix', 'url' => site_setting('strategix_cta_url', 'https://strategix.grapadikonsultan.co.id'), 'active' => false, 'external' => true],
+    ['label' => 'Strategix', 'url' => 'https://strategix.grapadikonsultan.co.id', 'active' => false, 'external' => true],
 ];
 @endphp
 

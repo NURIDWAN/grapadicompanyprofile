@@ -56,11 +56,32 @@ class PageController extends Controller
             ];
         })->toArray();
 
+        // Grapadi Strategix Section
+        $strategix = [
+            'is_active' => SiteSetting::get('strategix_is_active', true),
+            'logo' => SiteSetting::get('strategix_logo', ''),
+            'title' => SiteSetting::get('strategix_title', 'Grapadi Strategix'),
+            'description' => SiteSetting::get('strategix_description', 'Grapadi Strategix is a flagship product of Grapadi Konsultan, focusing on data- and technology-driven strategic consulting services. Designed to support informed and effective decision-making, Grapadi Strategix helps organizations enhance business process effectiveness, strengthen corporate governance, and achieve sustainable long-term performance.'),
+            'cta_text' => SiteSetting::get('strategix_cta_text', 'Coba Gratis Sekarang'),
+            'cta_url' => SiteSetting::get('strategix_cta_url', 'https://strategix.grapadi.com'),
+        ];
+
+        // Director Section
+        $director = [
+            'title' => SiteSetting::get('director_title', 'Director'),
+            'name' => SiteSetting::get('director_name', 'Andika Pujangkoro, SE, M.Ec.Dev'),
+            'description' => SiteSetting::get('director_description', 'Andika Pujangkoro, SE., M.Ec.Dev merupakan Director dari Grapadi International yang berpengalaman dalam bidang studi kelayakan, market research, business plan, dan konsultasi bisnis. Berbekal latar belakang akademik dan pengalaman profesional dalam berbagai proyek lintas sektor, beliau membantu perusahaan, investor, dan pengembang dalam mengambil keputusan bisnis yang lebih tepat melalui pendekatan berbasis data dan analisis yang komprehensif.'),
+            'image' => SiteSetting::get('director_image', 'image/about/person/image.png'),
+            'linkedin' => SiteSetting::get('director_linkedin', ''),
+        ];
+
         return view('pages.home', compact(
             'services', 
             'trustedBrands', 
             'hero',
-            'faqs'
+            'faqs',
+            'strategix',
+            'director'
         ));
     }
 

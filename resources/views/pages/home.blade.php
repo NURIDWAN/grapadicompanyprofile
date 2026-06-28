@@ -17,10 +17,61 @@
             :stats="$hero['stats']"
         />
 
-        {{-- 2. Trusted By + CTA --}}
+        {{-- 2. Director Section --}}
+        <section class="py-12 lg:py-20 bg-background-dark">
+            <div class="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+                {{-- Left: Director Info --}}
+                <div data-animate="fade-in-left">
+                    <p class="text-sm text-primary uppercase tracking-[0.2em] font-semibold font-display italic mb-2">
+                        {{ $director['title'] }}
+                    </p>
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white mb-4 leading-tight">
+                        {{ $director['name'] }}
+                    </h2>
+
+                    @if($director['linkedin'])
+                    <div class="mb-6">
+                        <a href="{{ $director['linkedin'] }}" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex text-[#0077b5] hover:text-[#005582] transition min-h-[44px] min-w-[44px] items-center focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-dark rounded"
+                           aria-label="LinkedIn Profile">
+                            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                            </svg>
+                        </a>
+                    </div>
+                    @endif
+
+                    <p class="text-gray-300 leading-relaxed text-base lg:text-lg">
+                        {{ $director['description'] }}
+                    </p>
+                </div>
+
+                {{-- Right: Director Image --}}
+                <div class="relative rounded-2xl overflow-hidden shadow-2xl" data-animate="fade-in-right" data-delay="200">
+                    @php
+                        $directorImage = $director['image'];
+                        if ($directorImage && !str_starts_with($directorImage, 'http')) {
+                            $directorImageUrl = str_starts_with($directorImage, 'image/')
+                                ? asset($directorImage)
+                                : asset('storage/' . $directorImage);
+                        } else {
+                            $directorImageUrl = $directorImage;
+                        }
+                    @endphp
+                    <img 
+                        src="{{ $directorImageUrl }}" 
+                        alt="{{ $director['name'] }}" 
+                        class="w-full h-auto object-cover"
+                        loading="lazy"
+                    >
+                </div>
+            </div>
+        </section>
+
+        {{-- 3. Trusted By + CTA --}}
         <x-trusted-by-section :brands="$trustedBrands" />
 
-        {{-- 3. Services Section --}}
+        {{-- 4. Services Section --}}
         @if($services->isNotEmpty())
             <section class="py-8 lg:py-14">
                 <div class="px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
@@ -50,7 +101,46 @@
             </section>
         @endif
 
-        {{-- 4. FAQ Section --}}
+        {{-- 5. Grapadi Strategix Section --}}
+        @if($strategix['is_active'])
+        <section class="py-12 lg:py-20">
+            <div class="max-w-[1000px] mx-auto px-6 sm:px-8 lg:px-12 text-center">
+                {{-- Logo --}}
+                @php
+                    $strategixLogo = $strategix['logo'];
+                    if ($strategixLogo && !str_starts_with($strategixLogo, 'http')) {
+                        $strategixLogo = asset('storage/' . $strategixLogo);
+                    }
+                @endphp
+                @if($strategixLogo)
+                <div class="mb-8" data-animate="zoom-in">
+                    <img src="{{ $strategixLogo }}" alt="{{ $strategix['title'] }}" class="h-32 md:h-40 mx-auto">
+                </div>
+                @else
+                <div class="mb-8" data-animate="zoom-in">
+                    <div class="w-24 h-24 md:w-32 md:h-32 mx-auto bg-primary rounded-2xl flex items-center justify-center">
+                        <span class="text-white text-4xl md:text-5xl font-bold">G</span>
+                    </div>
+                </div>
+                @endif
+
+                <h2 class="text-3xl md:text-5xl font-bold font-display text-white mb-6 tracking-tight" data-animate="fade-in-up" data-delay="100">
+                    {{ $strategix['title'] }}
+                </h2>
+                <p class="text-gray-400 text-lg leading-relaxed max-w-3xl mx-auto mb-8" data-animate="fade-in-up" data-delay="200">
+                    {{ $strategix['description'] }}
+                </p>
+                <a href="{{ $strategix['cta_url'] }}" target="_blank" rel="noopener"
+                   class="inline-flex items-center gap-2 bg-primary hover:bg-primary-400 text-background-dark font-bold py-4 px-8 rounded-lg transition-colors duration-200 text-base min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-background-dark"
+                   data-animate="fade-in-up" data-delay="300">
+                    {{ $strategix['cta_text'] }}
+                    <span class="material-icons-outlined text-lg">arrow_forward</span>
+                </a>
+            </div>
+        </section>
+        @endif
+
+        {{-- 6. FAQ Section --}}
         @if(!empty($faqs))
             <section class="py-8 lg:py-14 px-6 sm:px-8 lg:px-12">
                 <div class="max-w-7xl mx-auto">
@@ -59,7 +149,7 @@
             </section>
         @endif
 
-        {{-- 5. Final CTA Banner --}}
+        {{-- 7. Final CTA Banner --}}
         <section class="py-8 lg:py-12 px-6 sm:px-8 lg:px-12">
             <div class="max-w-7xl mx-auto border border-border-dark rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 bg-surface-dark/40">
                 <div class="flex items-center gap-4">
