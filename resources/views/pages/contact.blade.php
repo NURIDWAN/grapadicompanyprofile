@@ -32,20 +32,20 @@ $twitterUrl = site_setting('twitter_url', '');
     </section>
 
     {{-- Contact Form & Info --}}
-    <section class="py-20 bg-surface-light dark:bg-background-dark">
+    <section class="py-20 bg-background-dark">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
                 {{-- Contact Form --}}
-                <div class="bg-white dark:bg-surface-dark p-8 lg:p-12 rounded-2xl shadow-lg" data-animate="fade-in-left">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Kirim Pesan</h2>
+                <div class="bg-surface-dark p-8 lg:p-12 rounded-2xl shadow-lg" data-animate="fade-in-left">
+                    <h2 class="text-2xl font-bold text-white mb-6">Kirim Pesan</h2>
                     @livewire('contact-form')
                 </div>
 
                 {{-- Contact Info --}}
                 <div class="space-y-8" data-animate="fade-in-right" data-delay="200">
                     <div>
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Contact Information</h2>
-                        <p class="text-gray-600 dark:text-gray-400 mb-8">
+                        <h2 class="text-2xl font-bold text-white mb-6">Contact Information</h2>
+                        <p class="text-gray-400 mb-8">
                             Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
                         </p>
                     </div>
@@ -57,8 +57,8 @@ $twitterUrl = site_setting('twitter_url', '');
                                 <span class="material-icons-outlined text-primary">location_on</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white mb-1">Office Address</h3>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                <h3 class="font-bold text-white mb-1">Office Address</h3>
+                                <p class="text-gray-400 text-sm">
                                     {!! nl2br(e($address)) !!}
                                 </p>
                             </div>
@@ -71,8 +71,8 @@ $twitterUrl = site_setting('twitter_url', '');
                                 <span class="material-icons-outlined text-primary">email</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white mb-1">Email</h3>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                <h3 class="font-bold text-white mb-1">Email</h3>
+                                <p class="text-gray-400 text-sm">
                                     {{ $email }}
                                 </p>
                             </div>
@@ -85,8 +85,8 @@ $twitterUrl = site_setting('twitter_url', '');
                                 <span class="material-icons-outlined text-primary">phone</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white mb-1">Phone</h3>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                <h3 class="font-bold text-white mb-1">Phone</h3>
+                                <p class="text-gray-400 text-sm">
                                     {!! nl2br(e($phone)) !!}
                                 </p>
                             </div>
@@ -99,8 +99,8 @@ $twitterUrl = site_setting('twitter_url', '');
                                 <span class="material-icons-outlined text-primary">schedule</span>
                             </div>
                             <div>
-                                <h3 class="font-bold text-gray-900 dark:text-white mb-1">Business Hours</h3>
-                                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                                <h3 class="font-bold text-white mb-1">Business Hours</h3>
+                                <p class="text-gray-400 text-sm">
                                     {!! nl2br(e($businessHours)) !!}
                                 </p>
                             </div>
@@ -110,26 +110,26 @@ $twitterUrl = site_setting('twitter_url', '');
 
                     {{-- Social Links --}}
                     @if($instagramUrl || $linkedinUrl || $facebookUrl || $twitterUrl)
-                    <div class="pt-8 border-t border-gray-200 dark:border-gray-700">
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-4">Follow Us</h3>
+                    <div class="pt-8 border-t border-gray-700">
+                        <h3 class="font-bold text-white mb-4">Follow Us</h3>
                         <div class="flex gap-4">
                             @if($facebookUrl)
-                            <a href="{{ $facebookUrl }}" target="_blank" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-white transition">
+                            <a href="{{ $facebookUrl }}" target="_blank" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition">
                                 <span class="material-icons-outlined">facebook</span>
                             </a>
                             @endif
                             @if($twitterUrl)
-                            <a href="{{ $twitterUrl }}" target="_blank" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-white transition">
+                            <a href="{{ $twitterUrl }}" target="_blank" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition">
                                 <span class="material-icons-outlined">twitter</span>
                             </a>
                             @endif
                             @if($linkedinUrl)
-                            <a href="{{ $linkedinUrl }}" target="_blank" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-white transition">
+                            <a href="{{ $linkedinUrl }}" target="_blank" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition">
                                 <span class="material-icons-outlined">linkedin</span>
                             </a>
                             @endif
                             @if($instagramUrl)
-                            <a href="{{ $instagramUrl }}" target="_blank" class="w-10 h-10 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-white transition">
+                            <a href="{{ $instagramUrl }}" target="_blank" class="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition">
                                 <span class="material-icons-outlined">instagram</span>
                             </a>
                             @endif

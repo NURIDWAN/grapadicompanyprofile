@@ -1,186 +1,163 @@
 @php
-// Get site settings
-$companyName = site_setting('site_company_name', 'Grapadi');
-$email = site_setting('site_email', 'info@grapadi.com');
-$address = site_setting('site_address', '');
-$phone = site_setting('site_phone', '');
-$logo = site_setting('site_logo', '');
+    // Get site settings with fallback values
+    $companyName = site_setting('site_company_name', 'Grapadi International');
+    $email = site_setting('site_email', 'info@grapadi.com');
+    $address = site_setting('site_address', 'Jakarta, Indonesia');
+    $phone = site_setting('site_phone', '+62 21 1234 5678');
+    $logo = site_setting('site_logo', '');
 
-// Footer content
-$footerCopyright = site_setting('footer_copyright', '© {year} {company}. ALL RIGHTS RESERVED.');
-$footerDescription = site_setting('footer_description', 'Grapadi adalah perusahaan Business Advisory dan Riset Strategis yang mendampingi pengambilan keputusan bisnis dan investasi melalui studi kelayakan berbasis riset.');
+    // Social media URLs
+    $linkedinUrl = site_setting('social_linkedin', 'https://www.linkedin.com/company/grapadi');
+    $instagramUrl = site_setting('social_instagram', 'https://www.instagram.com/grapadi');
 
-// Process copyright text
-$copyrightText = str_replace(['{year}', '{company}'], [date('Y'), strtoupper($companyName)], $footerCopyright);
+    // Copyright
+    $copyrightYear = date('Y');
 @endphp
 
-<footer class="bg-background-dark text-gray-400 pt-32 pb-8 text-sm">
-    <div class="max-w-6xl mx-auto px-6">
-        {{-- Top Section: Logo, Description & Subscribe --}}
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20">
-            {{-- Left: Logo & Description --}}
-            <div class="text-center lg:text-left">
-                <div class="flex items-center justify-center lg:justify-start gap-3 mb-6">
+<footer class="bg-background-dark border-t border-border-dark">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
+        {{-- Top Section: Logo & Link Columns --}}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-12">
+            {{-- Company Logo & Name --}}
+            <div class="lg:col-span-2">
+                <div class="flex items-center gap-3 mb-4">
                     @if($logo)
-                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                        <img src="{{ str_starts_with($logo, 'http') ? $logo : asset('storage/' . $logo) }}" alt="{{ $companyName }}" class="h-6 w-auto">
-                    </div>
+                        <img
+                            src="{{ str_starts_with($logo, 'http') ? $logo : asset('storage/' . $logo) }}"
+                            alt="{{ $companyName }}"
+                            class="h-10 w-auto"
+                        >
                     @else
-                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                        <span class="text-white font-bold text-lg">G</span>
-                    </div>
+                        <span class="text-white text-xl font-bold font-display">{{ $companyName }}</span>
                     @endif
-                    <span class="text-white text-xl font-bold">{{ $companyName }}</span>
+                    @if($logo)
+                        <span class="text-white text-lg font-bold">{{ $companyName }}</span>
+                    @endif
                 </div>
-                <p class="text-gray-400 text-sm leading-relaxed max-w-md mx-auto lg:mx-0">
-                    {{ $footerDescription }}
+                <p class="text-gray-400 text-sm leading-relaxed max-w-sm">
+                    Business Advisory dan Riset Strategis yang mendampingi pengambilan keputusan bisnis dan investasi.
                 </p>
             </div>
 
-            {{-- Right: Subscribe Section --}}
-            <div class="text-center lg:text-left">
-                <h4 class="text-primary font-bold text-xs tracking-widest uppercase mb-6">Subscribe to News</h4>
-                <form id="footer-newsletter-form" class="space-y-3 max-w-md mx-auto lg:mx-0" onsubmit="subscribeFooter(event)">
-                    @csrf
-                    <input 
-                        type="email" 
-                        name="email"
-                        id="footer-newsletter-email"
-                        placeholder="Enter your email address" 
-                        required
-                        class="w-full bg-gray-800/50 border border-gray-700 rounded-full px-5 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-primary text-sm"
-                    >
-                    <button 
-                        type="submit"
-                        id="footer-newsletter-btn"
-                        class="w-full bg-primary hover:bg-primary-700 text-white font-bold py-3 px-6 rounded-full flex items-center justify-center gap-2 transition"
-                    >
-                        <span id="footer-btn-text">Subscribe</span>
-                        <span class="material-icons-outlined text-sm" id="footer-btn-icon">north_east</span>
-                        <svg id="footer-spinner" class="hidden animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                    </button>
-                </form>
-                <p id="footer-newsletter-message" class="mt-3 text-sm hidden"></p>
+            {{-- Menu Column --}}
+            <div>
+                <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">Menu</h4>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="{{ url('/') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Beranda</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/layanan') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Layanan</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/tentang-kami') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Tentang Kami</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/blog') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Insights</a>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Layanan Column --}}
+            <div>
+                <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">Layanan</h4>
+                <ul class="space-y-1">
+                    <li>
+                        <a href="{{ url('/layanan') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Market Research</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/layanan') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Feasibility Study</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/layanan') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Strategic Advisory</a>
+                    </li>
+                    <li>
+                        <a href="{{ url('/layanan') }}"
+                           class="inline-flex items-center text-gray-400 hover:text-primary transition-colors duration-200 min-h-[44px] py-2 focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                        >Business Intelligence</a>
+                    </li>
+                </ul>
+            </div>
+
+            {{-- Kontak Column --}}
+            <div>
+                <h4 class="text-white font-semibold text-sm uppercase tracking-wider mb-4">Kontak</h4>
+                <ul class="space-y-1">
+                    @if($address)
+                        <li class="flex items-start gap-2 min-h-[44px] py-2">
+                            <span class="material-icons-outlined text-primary text-lg mt-0.5 shrink-0">location_on</span>
+                            <span class="text-gray-400 text-sm">{{ $address }}</span>
+                        </li>
+                    @endif
+                    @if($phone)
+                        <li class="flex items-center gap-2 min-h-[44px]">
+                            <span class="material-icons-outlined text-primary text-lg shrink-0">phone</span>
+                            <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}"
+                               class="text-gray-400 hover:text-primary transition-colors duration-200 text-sm min-h-[44px] inline-flex items-center focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                            >{{ $phone }}</a>
+                        </li>
+                    @endif
+                    @if($email)
+                        <li class="flex items-center gap-2 min-h-[44px]">
+                            <span class="material-icons-outlined text-primary text-lg shrink-0">mail</span>
+                            <a href="mailto:{{ $email }}"
+                               class="text-gray-400 hover:text-primary transition-colors duration-200 text-sm min-h-[44px] inline-flex items-center focus:outline-none focus:underline focus:text-primary focus:decoration-2"
+                            >{{ $email }}</a>
+                        </li>
+                    @endif
+                </ul>
             </div>
         </div>
 
-        {{-- Middle Section: Links Grid --}}
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-8 mb-12">
-            <div>
-                <h5 class="text-gray-500 font-bold text-xs tracking-widest uppercase mb-4">Company</h5>
-                <ul class="space-y-3">
-                    <li><a href="{{ url('/about') }}" class="text-gray-300 hover:text-primary transition">About Us</a></li>
-                    <li><a href="{{ url('/services') }}" class="text-gray-300 hover:text-primary transition">Services</a></li>
-                    <li><a href="{{ url('/portfolio') }}" class="text-gray-300 hover:text-primary transition">Portfolio</a></li>
-                    <li><a href="{{ url('/blog') }}" class="text-gray-300 hover:text-primary transition">Blog</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="text-gray-500 font-bold text-xs tracking-widest uppercase mb-4">Resources</h5>
-                <ul class="space-y-3">
-                    <li><a href="{{ url('/timeline') }}" class="text-gray-300 hover:text-primary transition">Timeline</a></li>
-                    <li><a href="{{ url('/contact') }}" class="text-gray-300 hover:text-primary transition">Contact Us</a></li>
-                </ul>
-            </div>
-            <div>
-                <h5 class="text-gray-500 font-bold text-xs tracking-widest uppercase mb-4">Contact</h5>
-                
-                @if($address)
-                <div class="flex items-start gap-2 text-gray-300 mb-3">
-                    <span class="material-icons-outlined text-lg mt-0.5">location_on</span>
-                    <span class="flex-1 text-sm">{!! nl2br(e($address)) !!}</span>
-                </div>
-                @endif
-
-                @if($phone)
-                <div class="flex items-center gap-2 text-gray-300 mb-3">
-                    <span class="material-icons-outlined text-lg">phone</span>
-                    <span class="text-sm">{!! nl2br(e($phone)) !!}</span>
-                </div>
-                @endif
-
-                @if($email)
-                <div class="flex items-center gap-2 text-gray-300">
-                    <span class="material-icons-outlined text-lg">mail_outline</span>
-                    <span class="text-sm">{{ $email }}</span>
-                </div>
-                @endif
-            </div>
+        {{-- Social Media Icons --}}
+        <div class="flex items-center gap-2 mb-8">
+            @if($linkedinUrl)
+                <a href="{{ $linkedinUrl }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="LinkedIn"
+                   class="inline-flex items-center justify-center w-11 h-11 text-gray-400 hover:text-primary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded"
+                >
+                    {{-- LinkedIn SVG Icon --}}
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                </a>
+            @endif
+            @if($instagramUrl)
+                <a href="{{ $instagramUrl }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   aria-label="Instagram"
+                   class="inline-flex items-center justify-center w-11 h-11 text-gray-400 hover:text-primary transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded"
+                >
+                    {{-- Instagram SVG Icon --}}
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"/>
+                    </svg>
+                </a>
+            @endif
         </div>
 
-        {{-- Bottom Section: Watermark & Copyright --}}
-        <div class="border-t border-gray-800 pt-8">
-            {{-- Watermark --}}
-            <div class="overflow-hidden select-none pointer-events-none mb-4">
-                <span class="text-6xl md:text-8xl lg:text-9xl font-black tracking-widest text-gray-800/30 uppercase font-display">
-                    GRAPADI
-                </span>
-            </div>
-            <p class="text-gray-600 text-xs text-center lg:text-left">
-                {{ $copyrightText }}
+        {{-- Copyright Bar --}}
+        <div class="border-t border-border-dark pt-6">
+            <p class="text-gray-500 text-sm">
+                &copy; {{ $copyrightYear }} {{ $companyName }}. All rights reserved.
             </p>
         </div>
     </div>
 </footer>
-
-<script>
-function subscribeFooter(event) {
-    event.preventDefault();
-    
-    const form = document.getElementById('footer-newsletter-form');
-    const email = document.getElementById('footer-newsletter-email').value;
-    const btn = document.getElementById('footer-newsletter-btn');
-    const btnText = document.getElementById('footer-btn-text');
-    const btnIcon = document.getElementById('footer-btn-icon');
-    const spinner = document.getElementById('footer-spinner');
-    const message = document.getElementById('footer-newsletter-message');
-    const csrfToken = form.querySelector('input[name="_token"]').value;
-    
-    // Show loading state
-    btn.disabled = true;
-    btnText.textContent = 'Subscribing...';
-    btnIcon.classList.add('hidden');
-    spinner.classList.remove('hidden');
-    message.classList.add('hidden');
-    
-    fetch('{{ route("newsletter.subscribe") }}', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': csrfToken,
-            'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-            email: email,
-            source: 'footer',
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        message.classList.remove('hidden');
-        
-        if (data.success) {
-            message.textContent = data.message;
-            message.className = 'mt-3 text-sm text-green-400';
-            form.reset();
-        } else {
-            message.textContent = data.message;
-            message.className = 'mt-3 text-sm text-red-400';
-        }
-    })
-    .catch(error => {
-        message.classList.remove('hidden');
-        message.textContent = 'Terjadi kesalahan. Silakan coba lagi.';
-        message.className = 'mt-3 text-sm text-red-400';
-    })
-    .finally(() => {
-        btn.disabled = false;
-        btnText.textContent = 'Subscribe';
-        btnIcon.classList.remove('hidden');
-        spinner.classList.add('hidden');
-    });
-}
-</script>

@@ -8,19 +8,35 @@ use Livewire\Component;
 class LeadCaptureModal extends Component
 {
     public bool $isOpen = false;
+
     public string $name = '';
+
     public string $whatsapp = '';
+
     public string $company = '';
-    
+
     // WhatsApp settings - loaded from site settings
     public string $adminWhatsapp = '';
+
     public string $defaultMessage = 'Halo, saya tertarik dengan layanan Grapadi. Mohon informasi lebih lanjut.';
-    
+
     protected $listeners = ['openLeadModal' => 'open'];
 
     public function mount(): void
     {
-        $this->adminWhatsapp = site_setting('site_whatsapp', '6281234567890');
+        $adminWhatsapp = site_setting('site_whatsapp', '6281234567890');
+
+        if (! is_string($adminWhatsapp) && ! is_numeric($adminWhatsapp)) {
+            $adminWhatsapp = '6281234567890';
+        }
+
+        $adminWhatsapp = trim((string) $adminWhatsapp);
+
+        if ($adminWhatsapp === '') {
+            $adminWhatsapp = '6281234567890';
+        }
+
+        $this->adminWhatsapp = $this->formatWhatsappNumber($adminWhatsapp);
     }
 
     protected function rules(): array
@@ -83,13 +99,13 @@ class LeadCaptureModal extends Component
     protected function formatWhatsappNumber(string $number): string
     {
         $number = preg_replace('/[^0-9]/', '', $number);
-        
+
         if (str_starts_with($number, '0')) {
-            $number = '62' . substr($number, 1);
+            $number = '62'.substr($number, 1);
         }
-        
-        if (!str_starts_with($number, '62')) {
-            $number = '62' . $number;
+
+        if (! str_starts_with($number, '62')) {
+            $number = '62'.$number;
         }
 
         return $number;
@@ -104,7 +120,7 @@ class LeadCaptureModal extends Component
         if ($this->company) {
             $message .= "Perusahaan: {$this->company}\n";
         }
-        
+
         return $message;
     }
 

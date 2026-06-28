@@ -14,39 +14,16 @@ use Illuminate\Http\Request;
 class PageController extends Controller
 {
     /**
-     * Homepage - menampilkan services, articles terbaru, dan executive team
+     * Homepage - menampilkan hero, trusted brands, services, FAQ, dan CTA
      */
     public function home()
     {
-
-        $services = Service::orderBy('service_name')->take(6)->get();
-        $articles = Article::with(['category', 'author'])
-            ->orderBy('created_at', 'desc')
-            ->take(3)
-            ->get();
-        $executiveTeam = ExecutiveTeam::orderBy('id')->first();
+        $services = Service::orderBy('service_name')->take(8)->get();
         
-        // Single query for all brands, split by type in PHP
-        $allBrands = Brand::active()->ordered()->get();
-        $trustedBrands = $allBrands->where('type', Brand::TYPE_TRUSTED)->values();
-        $mediaBrands = $allBrands->where('type', Brand::TYPE_MEDIA)->values();
-
-        // Get Software Bisnis Plan settings
-        $softwareBisnisPlan = [
-            'is_active' => SiteSetting::get('sbp_is_active', true),
-            'tagline' => SiteSetting::get('sbp_tagline', 'Software Bisnis Plan: Mudah, Murah, dan Cepat'),
-            'title' => SiteSetting::get('sbp_title', 'Susun Rencana Bisnis'),
-            'highlighted_title' => SiteSetting::get('sbp_highlighted_title', 'Lebih Cerdas'),
-            'description' => SiteSetting::get('sbp_description', 'Platform all-in-one untuk penyusunan strategi, proyeksi keuangan otomatis (NPV, IRR, Payback Period), dan analisis SWOT berbasis AI.'),
-            'callout' => SiteSetting::get('sbp_callout', 'Semua dalam satu solusi terintegrasi.'),
-            'primary_button_text' => SiteSetting::get('sbp_primary_button_text', 'MULAI SEKARANG GRATIS'),
-            'primary_button_url' => SiteSetting::get('sbp_primary_button_url', '/contact'),
-            'secondary_button_text' => SiteSetting::get('sbp_secondary_button_text', 'LIHAT FITUR'),
-            'secondary_button_url' => SiteSetting::get('sbp_secondary_button_url', '/services'),
-            'image' => SiteSetting::get('sbp_image', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'),
-            'image_alt' => SiteSetting::get('sbp_image_alt', 'Dashboard Preview'),
-            'show_laptop_frame' => SiteSetting::get('sbp_show_laptop_frame', true),
-        ];
+        // Get trusted brands
+        $trustedBrands = Brand::active()->ordered()
+            ->where('type', Brand::TYPE_TRUSTED)
+            ->get();
 
         // Get Hero Section settings
         $heroStats = SiteSetting::get('hero_stats', null);
@@ -55,10 +32,10 @@ class PageController extends Controller
         }
         if (empty($heroStats)) {
             $heroStats = [
-                ['icon' => 'person_outline', 'label' => '30+ tahun pengalaman untuk kesuksesan Anda.'],
-                ['icon' => 'cloud_queue', 'label' => 'Jaringan luas nasional & internasional untuk dukung bisnis Anda.'],
-                ['icon' => 'groups', 'label' => 'Tim ahli berpengalaman 10th+ dan berlatar belakang Magister dibidangnya siap mendukung Bisnis Anda'],
-                ['icon' => 'menu_book', 'label' => 'Solusi berbasis data dengan harga terbaik untuk Anda'],
+                ['icon' => 'groups', 'number' => '18+', 'label' => 'Years Experience', 'description' => 'Pengalaman panjang dalam memberikan solusi strategis untuk berbagai industri.'],
+                ['icon' => 'public', 'number' => '500+', 'label' => 'Projects Completed', 'description' => 'Proyek studi kelayakan, bisnis, dan investasi yang berhasil kami selesaikan.'],
+                ['icon' => 'bar_chart', 'number' => '120+', 'label' => 'Corporate Clients', 'description' => 'Klien korporasi dan institusi dari berbagai sektor di Indonesia.'],
+                ['icon' => 'account_balance', 'number' => 'Rp5T+', 'label' => 'Investment Analysed', 'description' => 'Total nilai investasi yang telah kami analisis dan berikan rekomendasi strategis.'],
             ];
         }
 
@@ -71,61 +48,19 @@ class PageController extends Controller
             'stats' => $heroStats,
         ];
 
-        // Get Quote Section settings
-        $quote = [
-            'text' => SiteSetting::get('quote_text', 'We combine rigorous data analysis with creative strategic thinking to deliver results that matter.'),
-            'background' => SiteSetting::get('quote_background', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200'),
-        ];
-
-        // Get Director Section settings
-        $director = [
-            'title' => SiteSetting::get('director_title', 'Director'),
-            'name' => SiteSetting::get('director_name', 'Muhammad Dwi Andika, SE, M.Ec.Dev, CA, CWA'),
-            'description' => SiteSetting::get('director_description', 'Dengan pengalaman 17+ tahun, Andika membantu klien mengatasi hambatan bisnis, memahami pasar, dan mengambil keputusan strategis berbasis data. Banyak perusahaan di Asia Tenggara telah merasakan dampak langsung dari pendekatan konsultasi yang praktis dan menyeluruh yang ia pimpin.'),
-            'image' => SiteSetting::get('director_image', 'image/about/person/image.png'),
-            'linkedin' => SiteSetting::get('director_linkedin', ''),
-        ];
-
-        // Get Services Section settings
-        $servicesSection = [
-            'title' => SiteSetting::get('services_title', 'Our Services'),
-            'cta_title' => SiteSetting::get('services_cta_title', 'Get Your Custom Solution'),
-            'cta_text' => SiteSetting::get('services_cta_text', 'Contact Us'),
-            'cta_url' => SiteSetting::get('services_cta_url', '/contact'),
-        ];
-
-        // Get Insights Section settings
-        $insightsSection = [
-            'title' => SiteSetting::get('insights_title', 'Discover Our Latest Market Intelligence & Industry Insights'),
-        ];
-
-        // Get CTA Section settings
-        $ctaSection = [
-            'title' => SiteSetting::get('cta_title', 'Ready to Transform Your Business?'),
-            'description' => SiteSetting::get('cta_description', "Whether you're looking for insights to grow your business or a career to grow your potential, we want to hear from you."),
-            'primary_text' => SiteSetting::get('cta_primary_text', 'Contact Us'),
-            'primary_url' => SiteSetting::get('cta_primary_url', '/contact'),
-            'secondary_text' => SiteSetting::get('cta_secondary_text', 'Learn More'),
-            'secondary_url' => SiteSetting::get('cta_secondary_url', '/about'),
-        ];
-
-        // Get Client Logos settings
-        $logoScrollSpeed = SiteSetting::get('logo_scroll_speed', 5);
+        // Get FAQs for home page
+        $faqs = Faq::active()->ordered()->get()->map(function ($faq) {
+            return [
+                'question' => $faq->question,
+                'answer' => $faq->answer,
+            ];
+        })->toArray();
 
         return view('pages.home', compact(
-            'logoScrollSpeed',
             'services', 
-            'articles', 
-            'executiveTeam', 
             'trustedBrands', 
-            'mediaBrands', 
-            'softwareBisnisPlan',
             'hero',
-            'quote',
-            'director',
-            'servicesSection',
-            'insightsSection',
-            'ctaSection'
+            'faqs'
         ));
     }
 

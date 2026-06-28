@@ -5,14 +5,14 @@
 
 @section('content')
     {{-- Hero Section --}}
-    <section class="bg-white dark:bg-background-dark py-16 lg:py-28">
+    <section class="bg-background-dark py-16 lg:py-28">
         <div class="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
             <div data-animate="fade-in-left">
                 <span class="text-primary font-bold tracking-wider uppercase text-sm mb-2 block">{{ $aboutHero['tagline'] }}</span>
-                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-display text-navy-brand dark:text-white leading-tight mb-4 sm:mb-6">
+                <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold font-display text-white leading-tight mb-4 sm:mb-6">
                     {{ $aboutHero['title'] }}
                 </h1>
-                <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-6 sm:mb-8 leading-relaxed">
+                <p class="text-base sm:text-lg text-gray-400 mb-6 sm:mb-8 leading-relaxed">
                     {{ $aboutHero['description'] }}
                 </p>
             </div>
@@ -33,7 +33,7 @@
     </section>
 
     {{-- Story & Mission / Director Section --}}
-    <section class="bg-surface-light dark:bg-surface-dark py-16 lg:py-20">
+    <section class="bg-surface-dark py-16 lg:py-20">
         <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
             <div class="order-2 lg:order-2 relative h-[350px] sm:h-[400px] lg:h-[500px] rounded-2xl overflow-hidden shadow-lg group" data-animate="fade-in-right" data-delay="200">
                 @php
@@ -50,10 +50,10 @@
                 <div class="absolute inset-0 bg-navy-brand/0"></div>
             </div>
             <div class="order-1 lg:order-1" data-animate="fade-in-left">
-                <h3 class="text-xl font-bold text-gray-600 dark:text-gray-400 mb-2">
+                <h3 class="text-xl font-bold text-gray-400 mb-2">
                     {{ $director['title'] }}
                 </h3>
-                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-navy-brand dark:text-white mb-4">
+                <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold font-display text-white mb-4">
                     {{ $director['name'] }}
                 </h2>
                 
@@ -67,7 +67,7 @@
                 </div>
                 @endif
 
-                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed text-lg">
+                <p class="text-gray-300 mb-6 leading-relaxed text-lg">
                     {{ $director['description'] }}
                 </p>
             </div>
@@ -77,21 +77,21 @@
 
 
     {{-- What We Do Section --}}
-    <section class="bg-white dark:bg-background-dark py-20">
+    <section class="bg-background-dark py-20">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12" data-animate="fade-in-up">
-                <h2 class="text-3xl md:text-4xl font-bold font-display text-primary dark:text-primary-light mb-6">
+                <h2 class="text-3xl md:text-4xl font-bold font-display text-primary mb-6">
                     {{ $aboutWhatWeDo['title'] }}
                 </h2>
-                <p class="max-w-4xl mx-auto text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                <p class="max-w-4xl mx-auto text-lg text-gray-400 leading-relaxed">
                     {{ $aboutWhatWeDo['description'] }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
                 @foreach($aboutWhatWeDo['items'] as $index => $item)
-                <div class="bg-gray-100 dark:bg-surface-dark rounded-2xl py-6 px-4 text-center hover:shadow-lg transition duration-300" data-animate="fade-in-up" data-delay="{{ $index * 100 }}">
-                    <span class="text-lg font-semibold text-gray-700 dark:text-gray-200">{{ $item['text'] }}</span>
+                <div class="bg-surface-dark rounded-2xl py-6 px-4 text-center hover:shadow-lg transition duration-300" data-animate="fade-in-up" data-delay="{{ $index * 100 }}">
+                    <span class="text-lg font-semibold text-gray-200">{{ $item['text'] }}</span>
                 </div>
                 @endforeach
             </div>
@@ -134,16 +134,16 @@
 
     {{-- Solutions Section --}}
     <section class="grid grid-cols-1 lg:grid-cols-2">
-        {{-- Left Panel (White - Timeline) --}}
-        <div class="bg-white dark:bg-background-dark py-12 sm:py-16 lg:py-20 px-4 lg:px-16 order-2 lg:order-1">
-            <div class="max-w-xl mx-auto lg:ml-auto lg:mr-0 pl-8 sm:pl-10 border-l border-gray-300 dark:border-gray-700 space-y-10 sm:space-y-16 relative">
-                 <div class="absolute -left-[5px] top-0 bottom-0 w-[1px] bg-gray-300 dark:bg-gray-700 hidden"></div>
+        {{-- Left Panel --}}
+        <div class="bg-background-dark py-12 sm:py-16 lg:py-20 px-4 lg:px-16 order-2 lg:order-1">
+            <div class="max-w-xl mx-auto lg:ml-auto lg:mr-0 pl-8 sm:pl-10 border-l border-gray-700 space-y-10 sm:space-y-16 relative">
+                 <div class="absolute -left-[5px] top-0 bottom-0 w-[1px] bg-gray-700 hidden"></div>
 
                  @foreach($aboutSolutions['items'] as $item)
                  <div class="relative group">
                     <div class="absolute -left-[53px] top-0 w-6 h-6 bg-primary rounded-full group-hover:scale-125 transition duration-300"></div>
-                    <h3 class="text-xl font-bold font-display text-gray-800 dark:text-white mb-3">{{ $item['title'] }}</h3>
-                    <p class="text-gray-600 dark:text-gray-400 leading-relaxed text-sm">
+                    <h3 class="text-xl font-bold font-display text-white mb-3">{{ $item['title'] }}</h3>
+                    <p class="text-gray-400 leading-relaxed text-sm">
                         {{ $item['description'] }}
                     </p>
                  </div>
@@ -151,13 +151,13 @@
             </div>
         </div>
 
-        {{-- Right Panel (White - Description) --}}
-        <div class="bg-white dark:bg-background-dark py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-16 flex items-center order-1 lg:order-2">
+        {{-- Right Panel --}}
+        <div class="bg-background-dark py-12 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-16 flex items-center order-1 lg:order-2">
              <div class="max-w-xl mx-auto lg:mx-0">
-                 <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold font-display text-gray-800 dark:text-white mb-4 sm:mb-8">
+                 <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-bold font-display text-white mb-4 sm:mb-8">
                      {{ $aboutSolutions['title'] }}
                  </h2>
-                 <p class="text-gray-600 dark:text-gray-400 text-lg leading-relaxed text-justify">
+                 <p class="text-gray-400 text-lg leading-relaxed text-justify">
                      {{ $aboutSolutions['description'] }}
                  </p>
              </div>
@@ -165,13 +165,13 @@
     </section>
 
     {{-- Leadership Team --}}
-    <section class="bg-surface-light dark:bg-surface-dark py-20">
+    <section class="bg-surface-dark py-20">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold font-display text-navy-brand dark:text-white mb-4">
+                <h2 class="text-3xl md:text-4xl font-bold font-display text-white mb-4">
                     {{ $teamSection['title'] }}
                 </h2>
-                <p class="text-gray-600 dark:text-gray-400">
+                <p class="text-gray-400">
                     {{ $teamSection['subtitle'] }}
                 </p>
             </div>
@@ -185,7 +185,7 @@
                     :linkedin="$member->linkedin_url"
                 />
                 @empty
-                <div class="col-span-full text-center py-12 text-gray-500 dark:text-gray-400">
+                <div class="col-span-full text-center py-12 text-gray-400">
                     <span class="material-icons-outlined text-6xl mb-4 block">groups</span>
                     <p>No team members found. Add team members in the admin panel.</p>
                 </div>
@@ -197,25 +197,25 @@
 
     {{-- FAQ Section --}}
     @if($faqs->count() > 0)
-    <section class="bg-white dark:bg-background-dark py-16 lg:py-20">
+    <section class="bg-background-dark py-16 lg:py-20">
         <div class="max-w-4xl mx-auto px-4">
             <div class="text-center mb-12" data-animate="fade-in-up">
-                <h2 class="text-3xl md:text-4xl font-bold font-display text-navy-brand dark:text-white mb-4">
+                <h2 class="text-3xl md:text-4xl font-bold font-display text-white mb-4">
                     Pertanyaan yang Sering Diajukan
                 </h2>
-                <p class="text-gray-600 dark:text-gray-400">
+                <p class="text-gray-400">
                     Temukan jawaban untuk pertanyaan umum tentang layanan kami
                 </p>
             </div>
 
             <div class="space-y-4" data-animate="fade-in-up" data-delay="200">
                 @foreach($faqs as $index => $faq)
-                <div x-data="{ open: {{ $index === 0 ? 'true' : 'false' }} }" class="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                <div x-data="{ open: {{ $index === 0 ? 'true' : 'false' }} }" class="border border-gray-700 rounded-xl overflow-hidden">
                     <button 
                         @click="open = !open" 
-                        class="w-full flex items-center justify-between px-6 py-4 text-left bg-gray-50 dark:bg-surface-dark hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                        class="w-full flex items-center justify-between px-6 py-4 text-left bg-surface-dark hover:bg-gray-800 transition-colors"
                     >
-                        <span class="font-semibold text-gray-800 dark:text-white pr-4">{{ $faq->question }}</span>
+                        <span class="font-semibold text-white pr-4">{{ $faq->question }}</span>
                         <span class="material-icons-outlined text-primary flex-shrink-0 transition-transform duration-300" :class="{ 'rotate-180': open }">
                             expand_more
                         </span>
@@ -223,9 +223,9 @@
                     <div 
                         x-show="open" 
                         x-collapse
-                        class="px-6 py-4 bg-white dark:bg-background-dark"
+                        class="px-6 py-4 bg-background-dark"
                     >
-                        <p class="text-gray-600 dark:text-gray-400 leading-relaxed">{{ $faq->answer }}</p>
+                        <p class="text-gray-400 leading-relaxed">{{ $faq->answer }}</p>
                     </div>
                 </div>
                 @endforeach

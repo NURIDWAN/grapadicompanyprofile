@@ -36,10 +36,10 @@
 
     {{-- Active Filters --}}
     @if($search || $currentCategory || $currentTag)
-    <section class="bg-surface-light dark:bg-surface-dark py-4 border-b border-gray-200 dark:border-gray-700">
+    <section class="bg-surface-dark py-4 border-b border-gray-700">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-wrap items-center gap-3">
-                <span class="text-sm text-gray-500 dark:text-gray-400">Active filters:</span>
+                <span class="text-sm text-gray-400">Active filters:</span>
                 
                 @if($search)
                 <a href="{{ route('blog', array_filter(request()->except('q'))) }}" 
@@ -75,7 +75,7 @@
 
     {{-- Featured Article (only shown when no filters) --}}
     @if($featuredArticle && !$search && !$currentCategory && !$currentTag)
-    <section class="py-16 bg-white dark:bg-background-dark">
+    <section class="py-16 bg-background-dark">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div class="rounded-2xl overflow-hidden shadow-xl" data-animate="fade-in-left">
@@ -83,10 +83,10 @@
                 </div>
                 <div class="lg:pl-8" data-animate="fade-in-right" data-delay="200">
                     <span class="text-primary font-bold text-sm uppercase tracking-wider">Featured</span>
-                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mt-4 mb-4">
+                    <h2 class="text-3xl md:text-4xl font-bold text-white mt-4 mb-4">
                         {{ $featuredArticle->title }}
                     </h2>
-                    <p class="text-gray-600 dark:text-gray-400 mb-6 leading-relaxed">
+                    <p class="text-gray-400 mb-6 leading-relaxed">
                         {{ $featuredArticle->excerpt_display }}
                     </p>
                     <div class="flex flex-wrap items-center gap-4 mb-6">
@@ -114,14 +114,14 @@
     @endif
 
     {{-- Main Content with Sidebar --}}
-    <section class="py-16 bg-surface-light dark:bg-surface-dark">
+    <section class="py-16 bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {{-- Sidebar --}}
                 <aside class="lg:col-span-1 order-2 lg:order-1">
                     {{-- Categories --}}
-                    <div class="bg-white dark:bg-background-dark rounded-xl shadow-sm p-6 mb-6" data-animate="fade-in-left">
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="bg-background-dark rounded-xl shadow-sm p-6 mb-6" data-animate="fade-in-left">
+                        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
                             <span class="material-icons-outlined text-primary">folder</span>
                             Categories
                         </h3>
@@ -129,9 +129,9 @@
                             @foreach($categories as $category)
                             <li>
                                 <a href="{{ route('blog', ['category' => $category->slug]) }}" 
-                                   class="flex items-center justify-between py-2 px-3 rounded-lg text-sm {{ $currentCategory && $currentCategory->id === $category->id ? 'bg-primary/10 text-primary font-medium' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800' }} transition">
+                                   class="flex items-center justify-between py-2 px-3 rounded-lg text-sm {{ $currentCategory && $currentCategory->id === $category->id ? 'bg-primary/10 text-primary font-medium' : 'text-gray-400 hover:bg-gray-800' }} transition">
                                     <span>{{ $category->category_name }}</span>
-                                    <span class="bg-gray-100 dark:bg-gray-800 text-gray-500 text-xs px-2 py-0.5 rounded-full">
+                                    <span class="bg-gray-800 text-gray-500 text-xs px-2 py-0.5 rounded-full">
                                         {{ $category->articles_count }}
                                     </span>
                                 </a>
@@ -142,15 +142,15 @@
 
                     {{-- Popular Tags --}}
                     @if($popularTags->count() > 0)
-                    <div class="bg-white dark:bg-background-dark rounded-xl shadow-sm p-6" data-animate="fade-in-left" data-delay="100">
-                        <h3 class="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                    <div class="bg-background-dark rounded-xl shadow-sm p-6" data-animate="fade-in-left" data-delay="100">
+                        <h3 class="font-bold text-white mb-4 flex items-center gap-2">
                             <span class="material-icons-outlined text-primary">label</span>
                             Popular Tags
                         </h3>
                         <div class="flex flex-wrap gap-2">
                             @foreach($popularTags as $tag)
                             <a href="{{ route('blog', ['tag' => $tag->slug]) }}" 
-                               class="inline-block px-3 py-1 text-sm rounded-full {{ $currentTag && $currentTag->id === $tag->id ? 'bg-primary text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-primary hover:text-white' }} transition">
+                               class="inline-block px-3 py-1 text-sm rounded-full {{ $currentTag && $currentTag->id === $tag->id ? 'bg-primary text-white' : 'bg-gray-800 text-gray-400 hover:bg-primary hover:text-white' }} transition">
                                 {{ $tag->name }}
                             </a>
                             @endforeach
@@ -162,7 +162,7 @@
                 {{-- Articles Grid --}}
                 <div class="lg:col-span-3 order-1 lg:order-2">
                     <div class="flex items-center justify-between mb-8">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                        <h2 class="text-2xl font-bold text-white">
                             @if($search)
                                 Search Results for "{{ $search }}"
                             @elseif($currentCategory)
@@ -201,9 +201,9 @@
                     @endif
                     @else
                     <div class="text-center py-16">
-                        <span class="material-icons-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">article</span>
-                        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">No articles found</h3>
-                        <p class="text-gray-500 dark:text-gray-400 mb-6">
+                        <span class="material-icons-outlined text-6xl text-gray-600 mb-4">article</span>
+                        <h3 class="text-xl font-bold text-white mb-2">No articles found</h3>
+                        <p class="text-gray-400 mb-6">
                             @if($search)
                                 Try different keywords or browse all articles.
                             @else

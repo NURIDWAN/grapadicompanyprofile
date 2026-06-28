@@ -1,115 +1,112 @@
 @props([
-    'title' => 'Grapadi Konsultan Indonesia',
-    'subtitle' => 'Where Data Meets Insight',
-    'ctaText' => null,
-    'ctaUrl' => '#',
+    'headline' => null,
+    'subheadline' => null,
+    'primaryCtaText' => null,
+    'primaryCtaUrl' => '/contact',
+    'secondaryCtaText' => null,
+    'secondaryCtaUrl' => '/portfolio',
     'backgroundImage' => null,
-    'showLogo' => true,
     'stats' => [],
-    'showClientLogos' => false,
-    'clientLogos' => [],
-    'clientLogosTitle' => 'Trusted By Leading Brands',
-    'clientLogosTitle2' => 'Our Technology Partners'
+    // Legacy prop support (backward-compatible with existing usage)
+    'title' => null,
+    'subtitle' => null,
+    'ctaText' => null,
+    'ctaUrl' => null,
+    'showLogo' => false,
 ])
 
-<section class="relative text-white flex flex-col bg-cover bg-center min-h-screen pb-8 pt-32">
-    {{-- Background Image (LCP Optimized) --}}
-    @if($backgroundImage)
-    <img src="{{ $backgroundImage }}" alt="Hero Background" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" loading="eager">
-    @else
-    <img src="{{ asset('image/background/image.png') }}" alt="Hero Background" class="absolute inset-0 w-full h-full object-cover" fetchpriority="high" loading="eager">
-    @endif
-    
-    {{-- Gradient Overlay --}}
-    <div class="absolute inset-0" style="background: linear-gradient(180deg, rgba(60, 97, 66, 0.9) 0%, rgba(0, 0, 0, 0.85) 80%);"></div>
-    {{-- Main Content - Centered --}}
-    <div class="flex-1 flex items-center justify-center">
-        <div class="max-w-5xl mx-auto px-4 text-center relative z-10">
-            {{-- Logo --}}
-            @if($showLogo)
-            <div class="flex justify-center mb-8 pt-8">
-                <img 
-                    src="{{ asset('image/logo/image.png') }}" 
-                    alt="Grapadi Logo" 
-                    class="w-44 h-44 md:w-56 md:h-56 lg:w-64 lg:h-64 object-contain"
-                    width="256"
-                    height="256"
-                    fetchpriority="high"
-                >
-            </div>
-            @endif
+@php
+    // Fixed headline/subheadline for the new design - ignore legacy title/subtitle
+    $displayHeadline = $headline ?? 'Strategic Advisory for <span class="text-gold-gradient">High-Impact Decisions</span>.';
+    $displaySubheadline = $subheadline ?? 'Kami membantu investor, developer, dan korporasi membuat keputusan bisnis dan investasi yang lebih tepat melalui analisis mendalam, data akurat, dan insight strategis yang independen.';
+    $displayPrimaryCtaText = $primaryCtaText ?? 'Schedule Strategy Session';
+    $displayPrimaryCtaUrl = $primaryCtaUrl ?? '/contact';
+    $displaySecondaryCtaText = $secondaryCtaText ?? 'View Case Studies';
+    $displaySecondaryCtaUrl = $secondaryCtaUrl ?? '/portfolio';
 
-            {{-- Title --}}
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold font-display leading-tight mb-6 text-white">
-                {!! $title !!}
-            </h1>
-            
-            {{-- Tagline/Subtitle --}}
-            @if($subtitle)
-            <p class="text-xl md:text-2xl text-gray-300 mb-8">{{ $subtitle }}</p>
-            @endif
+    // Resolve background image
+    $bgImage = $backgroundImage ?? asset('image/background/image.png');
+@endphp
 
-            @if($ctaText)
-            <div class="flex justify-center">
-                <a class="bg-primary hover:bg-primary-800 text-white font-bold py-4 px-10 rounded flex items-center gap-2 transition shadow-lg text-xl mb-8" href="{{ $ctaUrl }}">
-                    {{ $ctaText }}
-                    <span class="material-icons-outlined">arrow_forward</span>
-                </a>
-            </div>
-            @endif
-        </div>
+<section class="relative bg-background-dark overflow-hidden">
+    {{-- Right side background image --}}
+    <div class="absolute inset-y-0 right-0 w-full lg:w-[55%]">
+        <img
+            src="{{ $bgImage }}"
+            alt=""
+            aria-hidden="true"
+            class="absolute inset-0 w-full h-full object-cover opacity-80"
+            fetchpriority="high"
+            loading="eager"
+        >
+        {{-- Gradient overlays for blending into dark left side --}}
+        <div class="absolute inset-0 bg-gradient-to-r from-background-dark via-background-dark/80 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-background-dark/40"></div>
     </div>
-    {{-- Stats --}}
-    @if(count($stats) > 0)
-    <div class="w-full px-4 pb-8 relative z-10">
-        <div class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 border-t border-gray-700 pt-8 text-center">
-            @foreach($stats as $stat)
-            <div class="flex flex-col items-center">
-                @if(isset($stat['icon']))
-                <span class="material-icons-outlined text-5xl mb-3 text-white/80">{{ $stat['icon'] }}</span>
+
+    {{-- Content wrapper --}}
+    <div class="relative z-10 w-full max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        {{-- Top section: headline + CTA --}}
+        <div class="pt-24 lg:pt-32 pb-12">
+            <div class="max-w-xl">
+                {{-- Headline: serif font, gold gradient text --}}
+                <h1 class="text-[2.5rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[4rem] font-display font-bold text-white leading-[1.1] mb-8">
+                    {!! $displayHeadline !!}
+                </h1>
+
+                {{-- Subheadline: muted gray body text --}}
+                @if($displaySubheadline)
+                <p class="text-base md:text-lg text-gray-400 mb-8 max-w-lg leading-relaxed">
+                    {{ $displaySubheadline }}
+                </p>
                 @endif
-                <p class="text-base text-gray-300">{!! $stat['label'] !!}</p>
-            </div>
-            @endforeach
-        </div>
-    </div>
-    @endif
 
+                {{-- CTA Buttons --}}
+                <div class="flex flex-col sm:flex-row gap-4 items-start">
+                    @if($displayPrimaryCtaText)
+                    <a
+                        href="{{ $displayPrimaryCtaUrl }}"
+                        class="inline-flex items-center justify-center gap-2 bg-primary hover:bg-primary-400 text-background-dark font-bold py-4 px-8 rounded-lg transition-colors duration-200 text-base min-h-[44px] min-w-[44px] focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-background-dark"
+                    >
+                        {{ $displayPrimaryCtaText }}
+                        <span class="material-icons-outlined text-lg">arrow_forward</span>
+                    </a>
+                    @endif
 
-    {{-- Client Logos --}}
-    @if($showClientLogos)
-    <div class="w-full py-8 border-t border-gray-700/50">
-        @if($clientLogosTitle)
-        <p class="text-center text-base text-gray-400 mb-6 uppercase tracking-wider">{{ $clientLogosTitle }}</p>
-        @endif
-        
-        {{-- Row 1 - Static --}}
-        <div class="relative mb-6">
-            <div class="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16 px-4">
-                <img alt="Google" class="h-6 sm:h-8 md:h-10 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg">
-                <img alt="Microsoft" class="h-5 sm:h-6 md:h-8 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/9/96/Microsoft_logo_%282012%29.svg">
-                <img alt="Amazon" class="h-6 sm:h-7 md:h-9 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg">
-                <img alt="Meta" class="h-5 sm:h-6 md:h-8 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg">
-                <img alt="Apple" class="h-6 sm:h-8 md:h-10 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg">
-                <img alt="Netflix" class="h-5 sm:h-6 md:h-8 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg">
+                    @if($displaySecondaryCtaText)
+                    <a
+                        href="{{ $displaySecondaryCtaUrl }}"
+                        class="inline-flex items-center justify-center gap-2 border-2 border-primary text-primary hover:bg-primary/10 font-bold py-4 px-8 rounded-lg transition-colors duration-200 text-base min-h-[44px] min-w-[44px] focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-2 focus:ring-offset-background-dark"
+                    >
+                        {{ $displaySecondaryCtaText }}
+                    </a>
+                    @endif
+                </div>
             </div>
         </div>
-        
-        {{-- Row 2 - Static --}}
-        @if($clientLogosTitle2)
-        <p class="text-center text-base text-gray-400 mb-6 mt-8 uppercase tracking-wider">{{ $clientLogosTitle2 }}</p>
-        @endif
-        <div class="relative">
-            <div class="flex flex-wrap justify-center items-center gap-8 sm:gap-12 md:gap-16 px-4">
-                <img alt="Spotify" class="h-6 sm:h-7 md:h-9 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg">
-                <img alt="IBM" class="h-6 sm:h-8 md:h-10 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/5/51/IBM_logo.svg">
-                <img alt="Oracle" class="h-5 sm:h-6 md:h-8 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/5/50/Oracle_logo.svg">
-                <img alt="SAP" class="h-6 sm:h-7 md:h-9 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/5/59/SAP_2011_logo.svg">
-                <img alt="Adobe" class="h-6 sm:h-7 md:h-9 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/8/8d/Adobe_Corporate_Logo.svg">
-                <img alt="Intel" class="h-6 sm:h-8 md:h-10 object-contain brightness-0 invert opacity-70 hover:opacity-100 transition-opacity" src="https://upload.wikimedia.org/wikipedia/commons/7/7d/Intel_logo_%282006-2020%29.svg">
+
+        {{-- Stats Cards --}}
+        @if(is_array($stats) && count($stats) > 0)
+        <div class="pb-8 lg:pb-10">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                @foreach($stats as $stat)
+                <div class="border border-border-dark rounded-xl p-4 text-center bg-surface-dark/60 backdrop-blur-sm">
+                    @if(isset($stat['icon']))
+                    <span class="material-icons-outlined text-2xl text-primary mb-2 block">{{ $stat['icon'] }}</span>
+                    @endif
+                    @if(isset($stat['number']))
+                    <p class="text-2xl md:text-3xl font-bold font-display text-white mb-1">{{ $stat['number'] }}</p>
+                    @endif
+                    @if(isset($stat['label']))
+                    <p class="text-sm font-semibold text-primary mb-2">{{ $stat['label'] }}</p>
+                    @endif
+                    @if(isset($stat['description']))
+                    <p class="text-xs text-gray-500 leading-relaxed">{{ $stat['description'] }}</p>
+                    @endif
+                </div>
+                @endforeach
             </div>
         </div>
+        @endif
     </div>
-    @endif
 </section>
-

@@ -45,16 +45,16 @@
     $gridCols = $showCard ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6';
 @endphp
 
-<div class="bg-white dark:bg-surface-dark py-12 border-b border-gray-200 dark:border-gray-800 overflow-hidden relative">
-    {{-- Gradient Overlays (only on left side when card is shown) --}}
-    <div class="absolute inset-y-0 left-0 w-24 md:w-48 bg-gradient-to-r from-white via-white/90 to-transparent dark:from-surface-dark dark:via-surface-dark/90 dark:to-transparent z-10 pointer-events-none"></div>
+<div class="bg-background-dark py-12 border-b border-border-dark overflow-hidden relative">
+    {{-- Gradient Overlays --}}
+    <div class="absolute inset-y-0 left-0 w-24 md:w-48 bg-gradient-to-r from-background-dark via-background-dark/90 to-transparent z-10 pointer-events-none"></div>
     @if(!$showCard)
-    <div class="absolute inset-y-0 right-0 w-24 md:w-48 bg-gradient-to-l from-white via-white/90 to-transparent dark:from-surface-dark dark:via-surface-dark/90 dark:to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-y-0 right-0 w-24 md:w-48 bg-gradient-to-l from-background-dark via-background-dark/90 to-transparent z-10 pointer-events-none"></div>
     @endif
 
     {{-- Title --}}
     @if($title)
-    <p class="text-center text-sm text-gray-500 dark:text-gray-400 mb-8 uppercase tracking-wider font-medium relative z-10">{{ $title }}</p>
+    <p class="text-center text-sm text-gray-400 mb-8 uppercase tracking-wider font-medium font-display relative z-10">{{ $title }}</p>
     @endif
     
     {{-- Row 1: Scroll Left --}}
@@ -70,20 +70,20 @@
                             @php $logoUrl = $getLogoUrl($brand); @endphp
                             @if($logoUrl)
                                 @if($brand->url)
-                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center overflow-hidden dark:bg-gray-800/50 rounded-lg p-3" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
+                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center overflow-hidden rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="object-contain opacity-90 hover:opacity-100 transition-opacity duration-300" 
+                                            class="object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                             style="max-width:100%;max-height:70px;"
                                         >
                                     </a>
                                 @else
-                                    <div class="flex items-center justify-center overflow-hidden dark:bg-gray-800/50 rounded-lg p-3" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
+                                    <div class="flex items-center justify-center overflow-hidden rounded-lg p-3" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="object-contain opacity-90 hover:opacity-100 transition-opacity duration-300" 
+                                            class="object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                             style="max-width:100%;max-height:70px;"
@@ -94,10 +94,10 @@
                         @endforeach
                     @else
                         @foreach($defaultLogos as $logo)
-                            <div class="flex items-center justify-center overflow-hidden dark:bg-gray-800/50 rounded-lg p-3" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
+                            <div class="flex items-center justify-center overflow-hidden rounded-lg p-3" style="height:90px;{{ $showCard ? 'width:100%' : 'width:130px' }};">
                                 <img 
                                     alt="{{ $logo['name'] }}" 
-                                    class="object-contain opacity-90 hover:opacity-100 transition-opacity duration-300" 
+                                    class="object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                     src="{{ $logo['url'] }}"
                                     loading="lazy"
                                     style="max-width:100%;max-height:70px;"
@@ -111,21 +111,21 @@
             {{-- Stats Card (right side) --}}
             @if($showCard)
             <div class="lg:w-[35%] flex items-stretch">
-                <div class="w-full bg-white dark:bg-gray-800 rounded-2xl p-8 lg:p-10 flex flex-col justify-center border border-gray-200 dark:border-gray-700">
+                <div class="w-full bg-surface-dark rounded-2xl p-8 lg:p-10 flex flex-col justify-center border border-border-dark">
                     {{-- Number --}}
-                    <p class="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-2" style="letter-spacing: 2px;">
+                    <p class="text-5xl md:text-6xl font-extrabold text-white mb-2" style="letter-spacing: 2px;">
                         {{ $cardNumber }}
                     </p>
                     {{-- Title --}}
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">
+                    <h3 class="text-lg font-bold text-white mb-4">
                         {{ $cardTitle }}
                     </h3>
                     {{-- Description --}}
-                    <p class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-6" style="text-align: justify;">
+                    <p class="text-sm text-gray-400 leading-relaxed mb-6" style="text-align: justify;">
                         {{ $cardDescription }}
                     </p>
                     {{-- CTA Link --}}
-                    <a href="{{ $cardCtaUrl }}" class="inline-flex items-center text-sm font-bold text-gray-900 dark:text-white hover:text-primary transition-colors group">
+                    <a href="{{ $cardCtaUrl }}" class="inline-flex items-center text-sm font-bold text-primary hover:text-primary-300 transition-colors group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded">
                         {{ $cardCtaText }}
                         <svg class="w-4 h-4 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
@@ -146,10 +146,10 @@
                             @php $logoUrl = $getLogoUrl($brand); @endphp
                             @if($logoUrl)
                                 @if($brand->url)
-                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16">
+                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                         >
@@ -158,7 +158,7 @@
                                     <div class="flex items-center justify-center w-28 h-16">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                         >
@@ -171,7 +171,7 @@
                             <div class="flex items-center justify-center w-28 h-16">
                                 <img 
                                     alt="{{ $logo['name'] }}" 
-                                    class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                    class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                     src="{{ $logo['url'] }}"
                                     loading="lazy"
                                 >
@@ -190,10 +190,10 @@
                             @php $logoUrl = $getLogoUrl($brand); @endphp
                             @if($logoUrl)
                                 @if($brand->url)
-                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16">
+                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                             width="112"
@@ -204,7 +204,7 @@
                                     <div class="flex items-center justify-center w-28 h-16">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                             loading="lazy"
                                             width="112"
@@ -218,7 +218,7 @@
                         @foreach($defaultLogos as $logo)
                             <img 
                                 alt="{{ $logo['name'] }}" 
-                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                 src="{{ $logo['url'] }}"
                                 loading="lazy"
                                 width="112"
@@ -245,10 +245,10 @@
                             @php $logoUrl = $getLogoUrl($brand); @endphp
                             @if($logoUrl)
                                 @if($brand->url)
-                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16">
+                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                         >
                                     </a>
@@ -256,7 +256,7 @@
                                     <div class="flex items-center justify-center w-28 h-16">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                         >
                                     </div>
@@ -267,7 +267,7 @@
                         @foreach($defaultLogos as $logo)
                             <img 
                                 alt="{{ $logo['name'] }}" 
-                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                 src="{{ $logo['url'] }}"
                             >
                         @endforeach
@@ -283,10 +283,10 @@
                             @php $logoUrl = $getLogoUrl($brand); @endphp
                             @if($logoUrl)
                                 @if($brand->url)
-                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16">
+                                    <a href="{{ $brand->url }}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center w-28 h-16 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background-dark rounded">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                         >
                                     </a>
@@ -294,7 +294,7 @@
                                     <div class="flex items-center justify-center w-28 h-16">
                                         <img 
                                             alt="{{ $brand->name }}" 
-                                            class="max-h-full max-w-full object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                            class="max-h-full max-w-full object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                             src="{{ $logoUrl }}"
                                         >
                                     </div>
@@ -305,7 +305,7 @@
                         @foreach($defaultLogos as $logo)
                             <img 
                                 alt="{{ $logo['name'] }}" 
-                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300" 
+                                class="{{ $logo['height'] }} object-contain opacity-60 grayscale brightness-200 hover:grayscale-0 hover:opacity-100 hover:brightness-100 transition-all duration-300" 
                                 src="{{ $logo['url'] }}"
                             >
                         @endforeach

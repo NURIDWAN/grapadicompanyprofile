@@ -3,21 +3,25 @@
     'title' => 'Service Title',
     'description' => '',
     'link' => '#',
-    'linkText' => 'Explore'
+    'linkText' => 'Explore',
 ])
 
-<div class="bg-white dark:bg-surface-dark p-8 rounded border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition">
-    <div class="w-14 h-14 bg-primary-50 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-6 text-primary">
-        <span class="material-icons-outlined text-5xl">{{ $icon }}</span>
+<div class="bg-surface-dark border border-border-dark rounded-xl p-6 hover:border-primary/30 transition-colors duration-300 group flex flex-col">
+    <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-5">
+        <span class="material-icons-outlined text-2xl text-primary">{{ $icon }}</span>
     </div>
-    <h3 class="text-3xl font-bold font-display text-gray-900 dark:text-white mb-3">
-        {{ $title }}
-    </h3>
-    <p class="text-gray-600 dark:text-gray-400 text-lg mb-6 leading-relaxed">
-        {!! Str::limit(strip_tags($description), 150) !!}
-    </p>
-    <a class="text-primary font-bold text-base flex items-center gap-1 hover:gap-2 transition-all" href="{{ $link }}">
+
+    <h3 class="text-lg font-display font-bold text-white mb-3">{{ $title }}</h3>
+
+    @if ($description)
+        <p class="text-sm text-gray-400 mb-5 leading-relaxed flex-1">
+            {!! Str::limit(strip_tags($description), 100) !!}
+        </p>
+    @endif
+
+    <a href="{{ $link }}"
+       class="text-primary text-sm font-semibold flex items-center gap-2 group-hover:gap-3 transition-all min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-dark rounded mt-auto">
         {{ $linkText }}
-        <span class="material-icons-outlined text-base">arrow_forward</span>
+        <span class="material-icons-outlined text-sm">arrow_forward</span>
     </a>
 </div>

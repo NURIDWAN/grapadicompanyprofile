@@ -5,12 +5,12 @@
     'dark' => false,
 ])
 
-<section class="py-16 {{ $dark ? 'bg-navy-brand' : 'bg-white dark:bg-background-dark' }}">
+<section class="py-16 {{ $dark ? 'bg-navy-brand' : 'bg-background-dark' }}">
     <div class="max-w-3xl mx-auto px-4 text-center">
-        <h2 class="text-3xl font-bold {{ $dark ? 'text-white' : 'text-gray-900 dark:text-white' }} mb-4">
+        <h2 class="text-3xl font-bold text-white mb-4">
             {{ $title }}
         </h2>
-        <p class="{{ $dark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-400' }} mb-8">
+        <p class="text-gray-400 mb-8">
             {{ $description }}
         </p>
         
@@ -23,7 +23,7 @@
                 id="newsletter-email-{{ $source }}"
                 placeholder="Enter your email" 
                 required
-                class="flex-1 px-4 py-3 rounded border {{ $dark ? 'border-gray-600 bg-white/10 text-white placeholder-gray-400' : 'border-gray-300 dark:border-gray-700 dark:bg-surface-dark' }} focus:ring-2 focus:ring-primary focus:border-primary outline-none"
+                class="flex-1 px-4 py-3 rounded border border-gray-700 bg-surface-dark text-white placeholder-gray-400 focus:ring-2 focus:ring-primary focus:border-primary outline-none"
             >
             <button 
                 type="submit" 

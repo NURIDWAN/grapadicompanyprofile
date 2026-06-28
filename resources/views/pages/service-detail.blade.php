@@ -37,7 +37,7 @@
     </section>
 
     {{-- Service Description --}}
-    <section class="py-16 bg-white dark:bg-background-dark">
+    <section class="py-16 bg-background-dark">
         <div class="max-w-4xl mx-auto px-4">
             @if($service->description)
             <div class="prose prose-lg dark:prose-invert max-w-none">
@@ -48,12 +48,12 @@
             {{-- Features --}}
             @if($service->features && is_array($service->features) && count($service->features) > 0)
             <div class="mt-12">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Layanan yang Termasuk</h2>
+                <h2 class="text-2xl font-bold text-white mb-6">Layanan yang Termasuk</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach($service->features as $feature)
-                    <div class="flex items-start gap-3 p-4 bg-surface-light dark:bg-surface-dark rounded-lg">
+                    <div class="flex items-start gap-3 p-4 bg-surface-dark rounded-lg">
                         <span class="material-icons-outlined text-primary text-xl shrink-0">check_circle</span>
-                        <span class="text-gray-700 dark:text-gray-300">{{ $feature }}</span>
+                        <span class="text-gray-300">{{ $feature }}</span>
                     </div>
                     @endforeach
                 </div>
@@ -64,14 +64,14 @@
 
     {{-- Related Portfolios --}}
     @if($portfolios->count() > 0)
-    <section class="py-16 bg-surface-light dark:bg-surface-dark">
+    <section class="py-16 bg-surface-dark">
         <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-8">
                 Proyek Terkait
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @foreach($portfolios as $portfolio)
-                <div class="bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-lg">
+                <div class="bg-background-dark rounded-xl overflow-hidden shadow-lg">
                     @if($portfolio->image_url)
                     <img src="{{ $portfolio->image_url }}" alt="{{ $portfolio->project_title }}" class="w-full h-48 object-cover">
                     @endif
@@ -80,11 +80,11 @@
                             <span class="bg-primary/10 text-primary text-xs font-bold px-2 py-1 rounded">{{ $portfolio->project_year }}</span>
                         </div>
                         <p class="text-primary text-sm font-semibold mb-1">{{ $portfolio->client_name }}</p>
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">{{ $portfolio->project_title }}</h3>
+                        <h3 class="text-lg font-bold text-white mb-2">{{ $portfolio->project_title }}</h3>
                         @if($portfolio->results && is_array($portfolio->results))
                         <div class="flex flex-wrap gap-2 mt-3">
                             @foreach(array_slice($portfolio->results, 0, 2) as $result)
-                            <span class="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <span class="text-xs text-gray-400 flex items-center gap-1">
                                 <span class="material-icons-outlined text-sm text-primary">check</span>
                                 {{ $result }}
                             </span>
@@ -107,22 +107,22 @@
 
     {{-- Related Services --}}
     @if($relatedServices->count() > 0)
-    <section class="py-16 bg-white dark:bg-background-dark">
+    <section class="py-16 bg-background-dark">
         <div class="max-w-7xl mx-auto px-4">
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-8">
+            <h2 class="text-2xl md:text-3xl font-bold text-white mb-8">
                 Layanan Lainnya
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 @foreach($relatedServices as $relatedService)
-                <a href="{{ route('services.show', $relatedService->slug) }}" class="block bg-surface-light dark:bg-surface-dark rounded-xl p-6 hover:shadow-lg transition group">
+                <a href="{{ route('services.show', $relatedService->slug) }}" class="block bg-surface-dark rounded-xl p-6 hover:shadow-lg transition group">
                     <div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
                         <span class="material-icons-outlined text-2xl">{{ $relatedService->icon_url ?? 'analytics' }}</span>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition">
+                    <h3 class="text-lg font-bold text-white mb-2 group-hover:text-primary transition">
                         {{ $relatedService->service_name }}
                     </h3>
                     @if($relatedService->description)
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <p class="text-sm text-gray-400">
                         {{ Str::limit(strip_tags($relatedService->description), 100) }}
                     </p>
                     @endif

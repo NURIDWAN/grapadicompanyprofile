@@ -5,9 +5,6 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-/* Enable class-based dark mode toggling */
-@custom-variant dark (&:where(.dark, .dark *));
-
 /* ============================================
    GLOBAL SCALING - Make everything slightly smaller
    ============================================ */
@@ -67,38 +64,36 @@ h6 {
 }
 
 @theme {
-    --font-sans: 'MuseoModerno', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-display: 'MuseoModerno', ui-sans-serif, system-ui, sans-serif;
-    --font-body: 'MuseoModerno', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Cormorant Garamond', serif;
+    --font-body: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
 
-    /* Primary colors - Forest Green */
-    --color-primary-50: #f2f7f3;
-    --color-primary-100: #e0ebe2;
-    --color-primary-200: #c2d7c6;
-    --color-primary-300: #96ba9d;
-    --color-primary-400: #669770;
-    --color-primary-500: #457a4f;
-    --color-primary-600: #3C6142;
-    --color-primary-700: #2f4e34;
-    --color-primary-800: #283f2c;
-    --color-primary-900: #223526;
-    --color-primary-950: #111d13;
-    --color-primary: #3C6142;
+    /* Primary colors - Gold/Amber */
+    --color-primary-50: #FDF8E8;
+    --color-primary-100: #F9EDCC;
+    --color-primary-200: #F0D88F;
+    --color-primary-300: #E5C157;
+    --color-primary-400: #D4B04A;
+    --color-primary-500: #C9A84C;
+    --color-primary-600: #A88A3C;
+    --color-primary-700: #866D2F;
+    --color-primary-800: #6B5726;
+    --color-primary-900: #5A491F;
+    --color-primary-950: #322810;
+    --color-primary: #C9A84C;
 
-    /* Navy Brand - Now Forest Green for consistency */
-    --color-navy-brand: #3C6142;
+    /* Background colors - Deep Forest Green */
+    --color-background-dark: #051a11;
+    --color-surface-dark: #0a2518;
+    --color-border-dark: #153322;
+}
 
-    /* Secondary colors */
-    --color-secondary: #1A1A1A;
-
-    /* Background colors - Softer dark mode */
-    --color-background-light: #FFFFFF;
-    --color-background-dark: #1a1a2e;
-
-    /* Surface colors - Consistent with background */
-    --color-surface-light: #F9FAFB;
-    --color-surface-dark: #1a1a2e;
+/* Gold gradient text utility */
+.text-gold-gradient {
+    background: linear-gradient(135deg, #C9A84C 0%, #E5C157 50%, #C9A84C 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 /* ============================================

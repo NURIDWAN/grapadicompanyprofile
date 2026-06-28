@@ -6,7 +6,7 @@
     'linkedin' => null
 ])
 
-<div class="bg-white dark:bg-background-dark rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition">
+<div class="bg-background-dark rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition">
     <div class="h-64 overflow-hidden">
         @if($photo)
         <img alt="{{ $name }}" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" src="{{ $photo }}">

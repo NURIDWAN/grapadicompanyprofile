@@ -55,20 +55,8 @@ class ManageSiteSettings extends Page implements HasForms
             'footer_newsletter_title' => SiteSetting::get('footer_newsletter_title', 'Newsletter'),
             'footer_newsletter_description' => SiteSetting::get('footer_newsletter_description', 'Subscribe to our Newsletter. Never miss out on an update from us.'),
             
-            // Software Bisnis Plan
-            'sbp_is_active' => SiteSetting::get('sbp_is_active', true),
-            'sbp_tagline' => SiteSetting::get('sbp_tagline', 'Software Bisnis Plan: Mudah, Murah, dan Cepat'),
-            'sbp_title' => SiteSetting::get('sbp_title', 'Susun Rencana Bisnis'),
-            'sbp_highlighted_title' => SiteSetting::get('sbp_highlighted_title', 'Lebih Cerdas'),
-            'sbp_description' => SiteSetting::get('sbp_description', 'Platform all-in-one untuk penyusunan strategi, proyeksi keuangan otomatis (NPV, IRR, Payback Period), dan analisis SWOT berbasis AI.'),
-            'sbp_callout' => SiteSetting::get('sbp_callout', 'Semua dalam satu solusi terintegrasi.'),
-            'sbp_primary_button_text' => SiteSetting::get('sbp_primary_button_text', 'MULAI SEKARANG GRATIS'),
-            'sbp_primary_button_url' => SiteSetting::get('sbp_primary_button_url', '/contact'),
-            'sbp_secondary_button_text' => SiteSetting::get('sbp_secondary_button_text', 'LIHAT FITUR'),
-            'sbp_secondary_button_url' => SiteSetting::get('sbp_secondary_button_url', '/services'),
-            'sbp_image' => SiteSetting::get('sbp_image', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800'),
-            'sbp_image_alt' => SiteSetting::get('sbp_image_alt', 'Dashboard Preview'),
-            'sbp_show_laptop_frame' => SiteSetting::get('sbp_show_laptop_frame', true),
+            // Software Bisnis Plan (deprecated - kept for data preservation)
+            'sbp_is_active' => SiteSetting::get('sbp_is_active', false),
             
             // Hero Section
             'hero_title' => SiteSetting::get('hero_title', 'Grapadi Konsultan Indonesia'),
@@ -78,36 +66,12 @@ class ManageSiteSettings extends Page implements HasForms
             'hero_show_logo' => SiteSetting::get('hero_show_logo', true),
             'hero_stats' => $this->decodeJsonStats(SiteSetting::get('hero_stats', null)),
             
-            // Quote Section
-            'quote_text' => SiteSetting::get('quote_text', 'We combine rigorous data analysis with creative strategic thinking to deliver results that matter.'),
-            'quote_background' => SiteSetting::get('quote_background', 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200'),
-            
             // Director Section
             'director_title' => SiteSetting::get('director_title', 'Director'),
             'director_name' => SiteSetting::get('director_name', 'Muhammad Dwi Andika, SE, M.Ec.Dev, CA, CWA'),
             'director_description' => SiteSetting::get('director_description', 'Dengan pengalaman 17+ tahun, Andika membantu klien mengatasi hambatan bisnis, memahami pasar, dan mengambil keputusan strategis berbasis data. Banyak perusahaan di Asia Tenggara telah merasakan dampak langsung dari pendekatan konsultasi yang praktis dan menyeluruh yang ia pimpin.'),
             'director_image' => SiteSetting::get('director_image', 'image/about/person/image.png'),
             'director_linkedin' => SiteSetting::get('director_linkedin', ''),
-            
-            // Services Section
-            'services_title' => SiteSetting::get('services_title', 'Our Services'),
-            'services_cta_title' => SiteSetting::get('services_cta_title', 'Get Your Custom Solution'),
-            'services_cta_text' => SiteSetting::get('services_cta_text', 'Contact Us'),
-            'services_cta_url' => SiteSetting::get('services_cta_url', '/contact'),
-            
-            // Insights Section
-            'insights_title' => SiteSetting::get('insights_title', 'Discover Our Latest Market Intelligence & Industry Insights'),
-            
-            // Client Logos Section
-            'logo_scroll_speed' => SiteSetting::get('logo_scroll_speed', 5),
-            
-            // CTA Section (Homepage)
-            'cta_title' => SiteSetting::get('cta_title', 'Ready to Transform Your Business?'),
-            'cta_description' => SiteSetting::get('cta_description', "Whether you're looking for insights to grow your business or a career to grow your potential, we want to hear from you."),
-            'cta_primary_text' => SiteSetting::get('cta_primary_text', 'Contact Us'),
-            'cta_primary_url' => SiteSetting::get('cta_primary_url', '/contact'),
-            'cta_secondary_text' => SiteSetting::get('cta_secondary_text', 'Learn More'),
-            'cta_secondary_url' => SiteSetting::get('cta_secondary_url', '/about'),
 
             // About Page - Hero Section
             'about_hero_tagline' => SiteSetting::get('about_hero_tagline', 'About Us'),
@@ -404,6 +368,10 @@ class ManageSiteSettings extends Page implements HasForms
                         Forms\Components\Tabs\Tab::make('Homepage Sections')
                             ->icon('heroicon-o-home')
                             ->schema([
+                                Forms\Components\Placeholder::make('homepage_info')
+                                    ->content('Homepage terdiri dari 5 section: Hero, Trusted By, Services, FAQ, dan Final CTA. Trusted By dikelola melalui menu Brands. FAQ dikelola melalui menu FAQ. Services ditampilkan otomatis dari data layanan.')
+                                    ->columnSpanFull(),
+
                                 // Hero Section
                                 Forms\Components\Section::make('Hero Section')
                                     ->description('Pengaturan section hero di homepage')
@@ -433,15 +401,21 @@ class ManageSiteSettings extends Page implements HasForms
                                             ->default(true),
 
                                         Forms\Components\Repeater::make('hero_stats')
-                                            ->label('Statistik Hero')
+                                            ->label('Statistik Hero (Kartu di bawah CTA)')
                                             ->schema([
                                                 Forms\Components\TextInput::make('icon')
                                                     ->label('Icon (Material Icons)')
-                                                    ->placeholder('person_outline')
+                                                    ->placeholder('groups')
                                                     ->helperText('Nama icon dari Material Icons Outlined'),
+                                                Forms\Components\TextInput::make('number')
+                                                    ->label('Angka')
+                                                    ->placeholder('18+'),
                                                 Forms\Components\TextInput::make('label')
                                                     ->label('Label')
-                                                    ->placeholder('30+ tahun pengalaman'),
+                                                    ->placeholder('Years Experience'),
+                                                Forms\Components\TextInput::make('description')
+                                                    ->label('Deskripsi')
+                                                    ->placeholder('Pengalaman panjang...'),
                                             ])
                                             ->columns(2)
                                             ->defaultItems(4)
@@ -450,27 +424,9 @@ class ManageSiteSettings extends Page implements HasForms
                                     ])
                                     ->collapsible(),
 
-                                // Quote Section
-                                Forms\Components\Section::make('Quote Section')
-                                    ->description('Pengaturan section quote/kutipan')
-                                    ->schema([
-                                        Forms\Components\Textarea::make('quote_text')
-                                            ->label('Teks Quote')
-                                            ->placeholder('We combine rigorous data analysis...')
-                                            ->rows(3),
-
-                                        Forms\Components\FileUpload::make('quote_background')
-                                            ->label('Background Image')
-                                            ->image()
-                                            ->directory('homepage')
-                                            ->visibility('public')
-                                            ->helperText('Atau biarkan kosong untuk menggunakan URL default'),
-                                    ])
-                                    ->collapsible(),
-
-                                // Director Section
+                                // Director Section (used on About page, kept here for convenience)
                                 Forms\Components\Section::make('Director Section')
-                                    ->description('Pengaturan section profil direktur')
+                                    ->description('Profil direktur (ditampilkan di halaman About)')
                                     ->schema([
                                         Forms\Components\TextInput::make('director_title')
                                             ->label('Jabatan')
@@ -499,168 +455,8 @@ class ManageSiteSettings extends Page implements HasForms
                                             ->placeholder('https://linkedin.com/in/username')
                                             ->prefixIcon('heroicon-o-link'),
                                     ])
-                                    ->collapsible(),
-
-                                // Services Section
-                                Forms\Components\Section::make('Services Section')
-                                    ->description('Pengaturan section layanan')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('services_title')
-                                            ->label('Judul Section')
-                                            ->placeholder('Our Services')
-                                            ->maxLength(255),
-
-                                        Forms\Components\TextInput::make('services_cta_title')
-                                            ->label('Judul CTA Card')
-                                            ->placeholder('Get Your Custom Solution')
-                                            ->maxLength(255),
-
-                                        Forms\Components\Grid::make(2)->schema([
-                                            Forms\Components\TextInput::make('services_cta_text')
-                                                ->label('Teks Tombol CTA')
-                                                ->placeholder('Contact Us'),
-
-                                            Forms\Components\TextInput::make('services_cta_url')
-                                                ->label('URL Tombol CTA')
-                                                ->placeholder('/contact'),
-                                        ]),
-                                    ])
-                                    ->collapsible(),
-
-                                // Insights Section
-                                Forms\Components\Section::make('Insights Section')
-                                    ->description('Pengaturan section artikel/insights')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('insights_title')
-                                            ->label('Judul Section')
-                                            ->placeholder('Discover Our Latest Market Intelligence & Industry Insights')
-                                            ->maxLength(500),
-                                    ])
-                                    ->collapsible(),
-
-                                // Client Logos Section
-                                Forms\Components\Section::make('Client Logos Section')
-                                    ->description('Pengaturan section logo klien/partner')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('logo_scroll_speed')
-                                            ->label('Kecepatan Scroll Logo (Detik)')
-                                            ->helperText('Semakin kecil angka, semakin cepat. Default: 5 detik.')
-                                            ->numeric()
-                                            ->minValue(1)
-                                            ->maxValue(60)
-                                            ->default(5)
-                                            ->suffix('detik'),
-                                    ])
-                                    ->collapsible(),
-
-                                // Software Bisnis Plan Section
-                                Forms\Components\Section::make('Software Bisnis Plan Section')
-                                    ->description('Pengaturan section Software Bisnis Plan di homepage')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('sbp_is_active')
-                                            ->label('Aktifkan Section')
-                                            ->helperText('Jika dinonaktifkan, section tidak akan tampil di homepage')
-                                            ->default(true),
-
-                                        Forms\Components\TextInput::make('sbp_tagline')
-                                            ->label('Tagline')
-                                            ->placeholder('Software Bisnis Plan: Mudah, Murah, dan Cepat')
-                                            ->maxLength(255),
-
-                                        Forms\Components\TextInput::make('sbp_title')
-                                            ->label('Judul Utama')
-                                            ->placeholder('Susun Rencana Bisnis')
-                                            ->maxLength(255),
-
-                                        Forms\Components\TextInput::make('sbp_highlighted_title')
-                                            ->label('Judul Highlight (Warna Primary)')
-                                            ->placeholder('Lebih Cerdas')
-                                            ->maxLength(255),
-
-                                        Forms\Components\Textarea::make('sbp_description')
-                                            ->label('Deskripsi')
-                                            ->placeholder('Platform all-in-one untuk penyusunan strategi...')
-                                            ->rows(3),
-
-                                        Forms\Components\TextInput::make('sbp_callout')
-                                            ->label('Callout (Teks Bold)')
-                                            ->placeholder('Semua dalam satu solusi terintegrasi.')
-                                            ->maxLength(255),
-
-                                        Forms\Components\Grid::make(2)->schema([
-                                            Forms\Components\TextInput::make('sbp_primary_button_text')
-                                                ->label('Teks Tombol Primary')
-                                                ->placeholder('MULAI SEKARANG GRATIS'),
-
-                                            Forms\Components\TextInput::make('sbp_primary_button_url')
-                                                ->label('URL Tombol Primary')
-                                                ->placeholder('/contact'),
-                                        ]),
-
-                                        Forms\Components\Grid::make(2)->schema([
-                                            Forms\Components\TextInput::make('sbp_secondary_button_text')
-                                                ->label('Teks Tombol Secondary')
-                                                ->placeholder('LIHAT FITUR'),
-
-                                            Forms\Components\TextInput::make('sbp_secondary_button_url')
-                                                ->label('URL Tombol Secondary')
-                                                ->placeholder('/services'),
-                                        ]),
-
-                                        Forms\Components\FileUpload::make('sbp_image')
-                                            ->label('Upload Gambar')
-                                            ->image()
-                                            ->directory('software-bisnis-plan')
-                                            ->visibility('public')
-                                            ->helperText('Upload gambar baru, atau biarkan kosong untuk default'),
-
-                                        Forms\Components\TextInput::make('sbp_image_alt')
-                                            ->label('Alt Text Gambar')
-                                            ->placeholder('Dashboard Preview')
-                                            ->maxLength(255),
-
-                                        Forms\Components\Toggle::make('sbp_show_laptop_frame')
-                                            ->label('Tampilkan Frame Laptop')
-                                            ->helperText('Jika aktif, gambar akan ditampilkan dalam frame laptop')
-                                            ->default(true),
-                                    ])
-                                    ->collapsible(),
-
-                                // CTA Section
-                                Forms\Components\Section::make('CTA Section')
-                                    ->description('Pengaturan section Call-to-Action di bagian bawah')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('cta_title')
-                                            ->label('Judul CTA')
-                                            ->placeholder('Ready to Transform Your Business?')
-                                            ->maxLength(255),
-
-                                        Forms\Components\Textarea::make('cta_description')
-                                            ->label('Deskripsi CTA')
-                                            ->placeholder('Whether you\'re looking for insights...')
-                                            ->rows(2),
-
-                                        Forms\Components\Grid::make(2)->schema([
-                                            Forms\Components\TextInput::make('cta_primary_text')
-                                                ->label('Teks Tombol Primary')
-                                                ->placeholder('Contact Us'),
-
-                                            Forms\Components\TextInput::make('cta_primary_url')
-                                                ->label('URL Tombol Primary')
-                                                ->placeholder('/contact'),
-                                        ]),
-
-                                        Forms\Components\Grid::make(2)->schema([
-                                            Forms\Components\TextInput::make('cta_secondary_text')
-                                                ->label('Teks Tombol Secondary')
-                                                ->placeholder('Learn More'),
-
-                                            Forms\Components\TextInput::make('cta_secondary_url')
-                                                ->label('URL Tombol Secondary')
-                                                ->placeholder('/about'),
-                                        ]),
-                                    ])
-                                    ->collapsible(),
+                                    ->collapsible()
+                                    ->collapsed(),
                             ]),
 
                         // Tab 7: About Page
@@ -1134,28 +930,6 @@ class ManageSiteSettings extends Page implements HasForms
         SiteSetting::set('footer_newsletter_title', $data['footer_newsletter_title'], 'footer', 'text');
         SiteSetting::set('footer_newsletter_description', $data['footer_newsletter_description'], 'footer', 'text');
 
-        // Software Bisnis Plan
-        $sbpImageValue = $data['sbp_image'];
-        if (is_array($sbpImageValue) && !empty($sbpImageValue)) {
-            $sbpImageValue = reset($sbpImageValue);
-        } elseif (empty($sbpImageValue)) {
-            $sbpImageValue = SiteSetting::get('sbp_image', 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800');
-        }
-
-        SiteSetting::set('sbp_is_active', $data['sbp_is_active'], 'software_bisnis_plan', 'boolean');
-        SiteSetting::set('sbp_tagline', $data['sbp_tagline'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_title', $data['sbp_title'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_highlighted_title', $data['sbp_highlighted_title'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_description', $data['sbp_description'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_callout', $data['sbp_callout'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_primary_button_text', $data['sbp_primary_button_text'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_primary_button_url', $data['sbp_primary_button_url'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_secondary_button_text', $data['sbp_secondary_button_text'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_secondary_button_url', $data['sbp_secondary_button_url'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_image', $sbpImageValue, 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_image_alt', $data['sbp_image_alt'], 'software_bisnis_plan', 'text');
-        SiteSetting::set('sbp_show_laptop_frame', $data['sbp_show_laptop_frame'], 'software_bisnis_plan', 'boolean');
-
         // Hero Section
         SiteSetting::set('hero_title', $data['hero_title'], 'homepage', 'text');
         SiteSetting::set('hero_subtitle', $data['hero_subtitle'], 'homepage', 'text');
@@ -1164,36 +938,12 @@ class ManageSiteSettings extends Page implements HasForms
         SiteSetting::set('hero_show_logo', $data['hero_show_logo'], 'homepage', 'boolean');
         SiteSetting::set('hero_stats', is_array($data['hero_stats']) ? json_encode($data['hero_stats']) : $data['hero_stats'], 'homepage', 'json');
 
-        // Quote Section
-        SiteSetting::set('quote_text', $data['quote_text'], 'homepage', 'text');
-        SiteSetting::set('quote_background', $processFile($data['quote_background'], 'quote_background'), 'homepage', 'text');
-
         // Director Section
         SiteSetting::set('director_title', $data['director_title'], 'homepage', 'text');
         SiteSetting::set('director_name', $data['director_name'], 'homepage', 'text');
         SiteSetting::set('director_description', $data['director_description'], 'homepage', 'text');
         SiteSetting::set('director_image', $processFile($data['director_image'], 'director_image'), 'homepage', 'text');
         SiteSetting::set('director_linkedin', $data['director_linkedin'], 'homepage', 'text');
-
-        // Services Section
-        SiteSetting::set('services_title', $data['services_title'], 'homepage', 'text');
-        SiteSetting::set('services_cta_title', $data['services_cta_title'], 'homepage', 'text');
-        SiteSetting::set('services_cta_text', $data['services_cta_text'], 'homepage', 'text');
-        SiteSetting::set('services_cta_url', $data['services_cta_url'], 'homepage', 'text');
-
-        // Insights Section
-        SiteSetting::set('insights_title', $data['insights_title'], 'homepage', 'text');
-
-        // Client Logos Section
-        SiteSetting::set('logo_scroll_speed', $data['logo_scroll_speed'], 'homepage', 'integer');
-
-        // CTA Section
-        SiteSetting::set('cta_title', $data['cta_title'], 'homepage', 'text');
-        SiteSetting::set('cta_description', $data['cta_description'], 'homepage', 'text');
-        SiteSetting::set('cta_primary_text', $data['cta_primary_text'], 'homepage', 'text');
-        SiteSetting::set('cta_primary_url', $data['cta_primary_url'], 'homepage', 'text');
-        SiteSetting::set('cta_secondary_text', $data['cta_secondary_text'], 'homepage', 'text');
-        SiteSetting::set('cta_secondary_url', $data['cta_secondary_url'], 'homepage', 'text');
 
         // About Page - Hero Section
         SiteSetting::set('about_hero_tagline', $data['about_hero_tagline'], 'about_page', 'text');

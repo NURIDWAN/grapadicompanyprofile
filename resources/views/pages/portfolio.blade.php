@@ -18,20 +18,20 @@
     </section>
 
     {{-- Portfolio Grid --}}
-    <section class="py-20 bg-surface-light dark:bg-background-dark">
+    <section class="py-20 bg-background-dark">
         <div class="max-w-7xl mx-auto px-4">
             {{-- Category Filter --}}
             @if($portfolioCategories->count() > 0)
             <div class="flex flex-wrap gap-3 mb-10 justify-center" data-animate="fade-in-up">
                 <a href="{{ url('/portfolio') }}" 
                    class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300 
-                          {{ !$currentCategory ? 'bg-primary text-white shadow-lg' : 'bg-white dark:bg-surface-dark text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600' }}">
+                          {{ !$currentCategory ? 'bg-primary text-white shadow-lg' : 'bg-surface-dark text-gray-300 hover:bg-gray-700 border border-gray-600' }}">
                     All Projects
                 </a>
                 @foreach($portfolioCategories as $category)
                 <a href="{{ url('/portfolio?category=' . $category->slug) }}" 
                    class="px-5 py-2 rounded-full text-sm font-semibold transition-all duration-300
-                          {{ $currentCategory && $currentCategory->id === $category->id ? 'bg-primary text-white shadow-lg' : 'bg-white dark:bg-surface-dark text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-600' }}">
+                          {{ $currentCategory && $currentCategory->id === $category->id ? 'bg-primary text-white shadow-lg' : 'bg-surface-dark text-gray-300 hover:bg-gray-700 border border-gray-600' }}">
                     {{ $category->name }}
                     <span class="ml-1 text-xs opacity-70">({{ $category->portfolios_count }})</span>
                 </a>
@@ -42,7 +42,7 @@
             {{-- Current Filter Info --}}
             @if($currentCategory)
             <div class="mb-8 text-center">
-                <p class="text-gray-600 dark:text-gray-400">
+                <p class="text-gray-400">
                     Showing projects in <span class="font-semibold text-primary">{{ $currentCategory->name }}</span>
                     <a href="{{ url('/portfolio') }}" class="ml-2 text-sm text-gray-500 hover:text-primary underline">Clear filter</a>
                 </p>
@@ -51,7 +51,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @forelse($portfolios as $index => $portfolio)
-                <div class="bg-white dark:bg-surface-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1" data-animate="fade-in-up" data-delay="{{ ($index % 6) * 100 }}">
+                <div class="bg-surface-dark rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group hover:-translate-y-1" data-animate="fade-in-up" data-delay="{{ ($index % 6) * 100 }}">
                     {{-- Image --}}
                     <div class="h-56 overflow-hidden relative">
                         <img alt="{{ $portfolio->project_title }}" 
@@ -67,7 +67,7 @@
                         @endif
                         {{-- Year Badge --}}
                         <div class="absolute top-4 right-4">
-                            <span class="bg-white/90 dark:bg-gray-800/90 text-gray-800 dark:text-gray-200 text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
+                            <span class="bg-gray-800/90 text-gray-200 text-xs font-bold px-3 py-1.5 rounded-full backdrop-blur-sm">
                                 {{ $portfolio->project_year }}
                             </span>
                         </div>
@@ -76,7 +76,7 @@
                     {{-- Card Content --}}
                     <div class="p-6">
                         {{-- Project Title --}}
-                        <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-primary transition">
+                        <h3 class="text-lg font-bold text-white mb-2 line-clamp-2 group-hover:text-primary transition">
                             {{ $portfolio->project_title }}
                         </h3>
                         
@@ -87,7 +87,7 @@
                         
                         {{-- Location --}}
                         @if($portfolio->location)
-                        <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <div class="flex items-center gap-2 text-sm text-gray-400 mb-4">
                             <span class="material-icons-outlined text-lg">location_on</span>
                             {{ $portfolio->location }}
                         </div>
@@ -95,8 +95,8 @@
 
                         {{-- Service Badge --}}
                         @if($portfolio->service)
-                        <div class="pt-4 border-t border-gray-100 dark:border-gray-700">
-                            <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full">
+                        <div class="pt-4 border-t border-gray-700">
+                            <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-400 bg-gray-700 px-3 py-1 rounded-full">
                                 <span class="material-icons-outlined text-sm">work_outline</span>
                                 {{ $portfolio->service->service_name }}
                             </span>
@@ -106,9 +106,9 @@
                 </div>
                 @empty
                 <div class="col-span-full text-center py-12">
-                    <span class="material-icons-outlined text-6xl text-gray-300 dark:text-gray-600 mb-4">folder_open</span>
-                    <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">No projects found</h3>
-                    <p class="text-gray-500 dark:text-gray-500">
+                    <span class="material-icons-outlined text-6xl text-gray-600 mb-4">folder_open</span>
+                    <h3 class="text-xl font-semibold text-gray-400 mb-2">No projects found</h3>
+                    <p class="text-gray-500">
                         @if($currentCategory)
                             No projects in this category yet.
                             <a href="{{ url('/portfolio') }}" class="text-primary hover:underline">View all projects</a>

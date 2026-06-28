@@ -9,16 +9,16 @@
             <x-timeline :items="$history" />
         @else
             {{-- Empty state --}}
-            <section class="py-20 bg-surface-light dark:bg-surface-dark">
+            <section class="py-20 bg-surface-dark">
                 <div class="max-w-6xl mx-auto px-4 sm:px-6">
                     <div class="text-center">
-                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full mb-6">
+                        <div class="inline-flex items-center justify-center w-20 h-20 bg-gray-800 rounded-full mb-6">
                             <span class="material-icons-outlined text-4xl text-gray-400">timeline</span>
                         </div>
-                        <h2 class="text-2xl font-bold font-display text-navy-brand dark:text-white mb-4">
+                        <h2 class="text-2xl font-bold font-display text-white mb-4">
                             Milestones Coming Soon
                         </h2>
-                        <p class="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
+                        <p class="text-gray-400 max-w-md mx-auto">
                             Our journey timeline is being prepared. Stay tuned for the key moments that shaped our history.
                         </p>
                     </div>
