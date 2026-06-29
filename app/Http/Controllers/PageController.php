@@ -70,7 +70,7 @@ class PageController extends Controller
         $latestArticles = Article::with(['category', 'author'])
             ->published()
             ->orderBy('published_at', 'desc')
-            ->take(8)
+            ->take(4)
             ->get();
 
         // Director Section

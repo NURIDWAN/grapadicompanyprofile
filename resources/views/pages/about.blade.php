@@ -164,37 +164,6 @@
         </div>
     </section>
 
-    {{-- Leadership Team --}}
-    <section class="bg-surface-dark py-20">
-        <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold font-display text-white mb-4">
-                    {{ $teamSection['title'] }}
-                </h2>
-                <p class="text-gray-400">
-                    {{ $teamSection['subtitle'] }}
-                </p>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                @forelse($executiveTeam as $member)
-                <x-team-card 
-                    :name="$member->name"
-                    :position="$member->position"
-                    :photo="$member->photo_url ? asset('storage/' . $member->photo_url) : null"
-                    :bio="$member->bio ?? ''"
-                    :linkedin="$member->linkedin_url"
-                />
-                @empty
-                <div class="col-span-full text-center py-12 text-gray-400">
-                    <span class="material-icons-outlined text-6xl mb-4 block">groups</span>
-                    <p>No team members found. Add team members in the admin panel.</p>
-                </div>
-                @endforelse
-            </div>
-
-        </div>
-    </section>
-
     {{-- FAQ Section --}}
     @if($faqs->count() > 0)
     <section class="bg-background-dark py-16 lg:py-20">
