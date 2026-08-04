@@ -1,10 +1,14 @@
 <?php
 
+use App\Http\Controllers\AssetInterestController;
+use App\Http\Controllers\AssetMatchingAuthController;
+use App\Http\Controllers\AssetMatchingController;
+use App\Http\Controllers\OwnerAssetController;
 use App\Http\Controllers\PageController;
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use App\Models\Inquiry;
 use App\Http\Controllers\ProjectContractController;
+use App\Models\Inquiry;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 // Project contract preview
 // Project contract preview
@@ -66,14 +70,44 @@ Route::get('/robots.txt', function () {
     $content .= "Allow: /\n";
     $content .= "Disallow: /gp-strategix\n";
     $content .= "Disallow: /gp-strategix/*\n\n";
-    $content .= "Sitemap: " . url('/sitemap.xml') . "\n";
-    
+    $content .= 'Sitemap: '.url('/sitemap.xml')."\n";
+
     return response($content, 200)->header('Content-Type', 'text/plain');
 })->name('robots');
 
 // Newsletter subscription
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::post('/newsletter/unsubscribe', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
+
+// Grapadi Asset Matching
+Route::prefix('asset-matching')->name('matching.')->group(function () {
+    Route::get('/', [AssetMatchingController::class, 'index'])->name('index');
+    Route::get('/aset/{asset}', [AssetMatchingController::class, 'show'])->name('show');
+
+    Route::middleware('guest')->group(function () {
+        Route::get('/login', [AssetMatchingAuthController::class, 'showLogin'])->name('login');
+        Route::post('/login', [AssetMatchingAuthController::class, 'login'])->middleware('throttle:6,1')->name('login.store');
+        Route::get('/daftar', [AssetMatchingAuthController::class, 'showRegister'])->name('register');
+        Route::post('/daftar', [AssetMatchingAuthController::class, 'register'])->middleware('throttle:6,1')->name('register.store');
+        Route::get('/lupa-password', [AssetMatchingAuthController::class, 'showForgotPassword'])->name('password.request');
+        Route::post('/lupa-password', [AssetMatchingAuthController::class, 'sendResetLink'])->middleware('throttle:6,1')->name('password.email');
+        Route::get('/reset-password/{token}', [AssetMatchingAuthController::class, 'showResetPassword'])->name('password.reset');
+        Route::post('/reset-password', [AssetMatchingAuthController::class, 'resetPassword'])->name('password.update');
+    });
+
+    Route::middleware('auth')->group(function () {
+        Route::post('/logout', [AssetMatchingAuthController::class, 'logout'])->name('logout');
+        Route::get('/dashboard', [AssetMatchingController::class, 'dashboard'])->name('dashboard');
+        Route::get('/aset-baru', [OwnerAssetController::class, 'create'])->name('assets.create');
+        Route::post('/aset-baru', [OwnerAssetController::class, 'store'])->name('assets.store');
+        Route::get('/aset-saya/{asset}/edit', [OwnerAssetController::class, 'edit'])->name('assets.edit');
+        Route::put('/aset-saya/{asset}', [OwnerAssetController::class, 'update'])->name('assets.update');
+        Route::post('/aset-saya/{asset}/submit', [OwnerAssetController::class, 'submit'])->name('assets.submit');
+        Route::post('/aset-saya/{asset}/arsipkan', [OwnerAssetController::class, 'archive'])->name('assets.archive');
+        Route::get('/aset-saya/{asset}/sertifikat', [OwnerAssetController::class, 'certificate'])->name('assets.certificate');
+        Route::post('/aset/{asset}/minat', [AssetInterestController::class, 'store'])->name('interests.store');
+    });
+});
 
 // Redirect /login to Filament admin login
 Route::get('/login', function () {
@@ -82,4 +116,3 @@ Route::get('/login', function () {
 
 // Blog article detail (catch-all, must be LAST route)
 Route::get('/{slug}', [PageController::class, 'articleDetail'])->name('blog.show');
-

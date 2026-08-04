@@ -16,6 +16,7 @@ $navItems = [
     ]],
     ['label' => 'Services', 'url' => url('/services'), 'active' => str_starts_with($currentRoute, 'services')],
     ['label' => 'Portfolio', 'url' => url('/portfolio'), 'active' => $currentRoute === 'portfolio'],
+    ['label' => 'Asset Matching', 'url' => route('matching.index'), 'active' => str_starts_with($currentRoute, 'asset-matching')],
     ['label' => 'Blog', 'url' => url('/blog'), 'active' => str_starts_with($currentRoute, 'blog')],
     ['label' => 'Strategix', 'url' => 'https://strategix.grapadikonsultan.co.id', 'active' => false, 'external' => true],
 ];

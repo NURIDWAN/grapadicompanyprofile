@@ -3,18 +3,17 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-use Filament\Models\Contracts\FilamentUser;
-use Filament\Panel;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -24,6 +23,8 @@ class User extends Authenticatable implements FilamentUser
     protected $fillable = [
         'name',
         'email',
+        'whatsapp',
+        'company',
         'password',
         'is_active',
     ];
@@ -55,5 +56,15 @@ class User extends Authenticatable implements FilamentUser
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->is_active && ($this->hasRole('super_admin') || $this->hasRole('admin'));
+    }
+
+    public function assets(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Asset::class, 'owner_id');
+    }
+
+    public function assetInterests(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AssetInterest::class);
     }
 }

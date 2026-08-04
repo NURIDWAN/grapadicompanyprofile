@@ -13,6 +13,8 @@ class Lead extends Model
 
     protected $fillable = [
         'name',
+        'user_id',
+        'asset_id',
         'whatsapp',
         'company',
         'status',
@@ -44,6 +46,7 @@ class Lead extends Model
         'referral' => 'Referral',
         'social' => 'Social Media',
         'event' => 'Event',
+        'asset_matching' => 'Asset Matching',
     ];
 
     public function getStatusColorAttribute(): string
@@ -68,6 +71,7 @@ class Lead extends Model
             'referral' => 'info',
             'social' => 'purple',
             'event' => 'warning',
+            'asset_matching' => 'primary',
             default => 'gray',
         };
     }
@@ -90,6 +94,16 @@ class Lead extends Model
         return $this->belongsTo(Client::class, 'converted_to_client_id');
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function asset(): BelongsTo
+    {
+        return $this->belongsTo(Asset::class);
+    }
+
     /**
      * Semua interaksi dengan lead
      */
@@ -103,7 +117,7 @@ class Lead extends Model
      */
     public function getIsConvertedAttribute(): bool
     {
-        return !is_null($this->converted_to_client_id);
+        return ! is_null($this->converted_to_client_id);
     }
 
     /**
@@ -111,20 +125,20 @@ class Lead extends Model
      */
     public function getFormattedWhatsappAttribute(): ?string
     {
-        if (!$this->whatsapp) {
+        if (! $this->whatsapp) {
             return null;
         }
 
         $number = preg_replace('/[^0-9]/', '', $this->whatsapp);
-        
+
         // Convert 08xx to 628xx
         if (str_starts_with($number, '0')) {
-            $number = '62' . substr($number, 1);
+            $number = '62'.substr($number, 1);
         }
-        
+
         // Add 62 if not present
-        if (!str_starts_with($number, '62')) {
-            $number = '62' . $number;
+        if (! str_starts_with($number, '62')) {
+            $number = '62'.$number;
         }
 
         return $number;
@@ -135,7 +149,7 @@ class Lead extends Model
      */
     public function getWhatsappUrlAttribute(): ?string
     {
-        if (!$this->formatted_whatsapp) {
+        if (! $this->formatted_whatsapp) {
             return null;
         }
 

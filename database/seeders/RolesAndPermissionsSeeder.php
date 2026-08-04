@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
 use App\Models\User;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RolesAndPermissionsSeeder extends Seeder
 {
@@ -27,6 +27,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'company-timeline',
             'executive-team',
             'interaction',
+            'asset',
+            'asset-category',
             'lead',
             'portfolio',
             'project',
@@ -65,8 +67,8 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdminRole->syncPermissions($allPermissions);
 
         // Admin - has all permissions except user management
-        $adminPermissions = array_filter($allPermissions, function($perm) {
-            return !str_contains($perm, '_user');
+        $adminPermissions = array_filter($allPermissions, function ($perm) {
+            return ! str_contains($perm, '_user');
         });
         $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $adminRole->syncPermissions($adminPermissions);

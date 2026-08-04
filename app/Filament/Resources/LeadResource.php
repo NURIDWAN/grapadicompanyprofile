@@ -7,10 +7,10 @@ use App\Filament\Resources\LeadResource\RelationManagers;
 use App\Models\Lead;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Notifications\Notification;
 
 class LeadResource extends Resource
 {
@@ -84,6 +84,12 @@ class LeadResource extends Resource
                     ->label('Perusahaan')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('asset.name')
+                    ->label('Aset Matching')
+                    ->searchable()
+                    ->url(fn (Lead $record): ?string => $record->asset ? \App\Filament\Resources\AssetResource::getUrl('view', ['record' => $record->asset]) : null)
+                    ->color('primary')
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
@@ -106,6 +112,7 @@ class LeadResource extends Resource
                         'referral' => 'info',
                         'social' => 'purple',
                         'event' => 'warning',
+                        'asset_matching' => 'primary',
                         default => 'gray',
                     })
                     ->formatStateUsing(fn (string $state): string => Lead::SOURCE_OPTIONS[$state] ?? $state),
@@ -148,7 +155,7 @@ class LeadResource extends Resource
                     ->color('success')
                     ->url(fn (Lead $record): ?string => $record->whatsapp_url)
                     ->openUrlInNewTab()
-                    ->visible(fn (Lead $record): bool => !empty($record->whatsapp)),
+                    ->visible(fn (Lead $record): bool => ! empty($record->whatsapp)),
                 Tables\Actions\Action::make('convert')
                     ->label('Convert to Client')
                     ->icon('heroicon-o-arrow-right-circle')
@@ -164,7 +171,7 @@ class LeadResource extends Resource
                             ->body("Lead berhasil dikonversi menjadi Client: {$client->company_name}")
                             ->send();
                     })
-                    ->visible(fn (Lead $record): bool => !$record->is_converted),
+                    ->visible(fn (Lead $record): bool => ! $record->is_converted),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
