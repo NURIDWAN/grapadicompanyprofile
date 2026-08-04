@@ -205,12 +205,12 @@
                     </div>
 
                     {{-- Article cards grid - 4 columns --}}
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4">
                         @foreach($latestArticles as $article)
                             <x-article-card
                                 :title="$article->title"
                                 :image="$article->image_display"
-                                :date="$article->published_at?->format('d M Y')"
+                                :date="$article->created_at->format('d M Y')"
                                 :link="'/' . $article->slug"
                                 :category="$article->category?->category_name"
                                 :categorySlug="$article->category?->slug"

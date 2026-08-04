@@ -73,37 +73,37 @@
     </section>
     @endif
 
-    {{-- Featured Article (only shown when no filters) --}}
-    @if($featuredArticle && !$search && !$currentCategory && !$currentTag)
+    {{-- Latest Article Hero Card --}}
+    @if($latestHeroArticle && !$search && !$currentCategory && !$currentTag)
     <section class="py-16 bg-background-dark">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div class="rounded-2xl overflow-hidden shadow-xl" data-animate="fade-in-left">
-                    <img alt="{{ $featuredArticle->title }}" class="w-full h-80 object-cover" src="{{ $featuredArticle->image_display }}">
+                    <img alt="{{ $latestHeroArticle->title }}" class="w-full h-80 object-cover" src="{{ $latestHeroArticle->image_display }}">
                 </div>
                 <div class="lg:pl-8" data-animate="fade-in-right" data-delay="200">
-                    <span class="text-primary font-bold text-sm uppercase tracking-wider">Featured</span>
+                    <span class="text-primary font-bold text-sm uppercase tracking-wider">Latest Article</span>
                     <h2 class="text-3xl md:text-4xl font-bold text-white mt-4 mb-4">
-                        {{ $featuredArticle->title }}
+                        {{ $latestHeroArticle->title }}
                     </h2>
                     <p class="text-gray-400 mb-6 leading-relaxed">
-                        {{ $featuredArticle->excerpt_display }}
+                        {{ $latestHeroArticle->excerpt_display }}
                     </p>
                     <div class="flex flex-wrap items-center gap-4 mb-6">
                         <span class="inline-flex items-center gap-1 text-sm text-gray-500">
                             <span class="material-icons-outlined text-sm">schedule</span>
-                            {{ $featuredArticle->reading_time_display }} min read
+                            {{ $latestHeroArticle->reading_time_display }} min read
                         </span>
                         <span class="text-sm text-gray-500">•</span>
-                        <span class="text-sm text-gray-500">{{ $featuredArticle->created_at->format('F d, Y') }}</span>
-                        @if($featuredArticle->category)
+                        <span class="text-sm text-gray-500">{{ $latestHeroArticle->created_at->format('F d, Y') }}</span>
+                        @if($latestHeroArticle->category)
                         <span class="text-sm text-gray-500">•</span>
-                        <a href="{{ route('blog', ['category' => $featuredArticle->category->slug]) }}" class="text-sm text-primary hover:underline">
-                            {{ $featuredArticle->category->category_name }}
+                        <a href="{{ route('blog', ['category' => $latestHeroArticle->category->slug]) }}" class="text-sm text-primary hover:underline">
+                            {{ $latestHeroArticle->category->category_name }}
                         </a>
                         @endif
                     </div>
-                    <a class="inline-flex items-center bg-primary hover:bg-primary-800 text-white font-bold py-3 px-6 rounded transition" href="{{ route('blog.show', $featuredArticle->slug) }}">
+                    <a class="inline-flex items-center bg-primary hover:bg-primary-800 text-white font-bold py-3 px-6 rounded transition" href="{{ route('blog.show', $latestHeroArticle->slug) }}">
                         Read Article
                         <span class="material-icons-outlined text-sm ml-2">arrow_forward</span>
                     </a>

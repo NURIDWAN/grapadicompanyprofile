@@ -66,10 +66,10 @@ class PageController extends Controller
             'cta_url' => SiteSetting::get('strategix_cta_url', 'https://strategix.grapadi.com'),
         ];
 
-        // Latest Articles for News Section (8 articles)
+        // Latest Articles for News Section
         $latestArticles = Article::with(['category', 'author'])
             ->published()
-            ->orderBy('published_at', 'desc')
+            ->orderBy('created_at', 'desc')
             ->take(4)
             ->get();
 
@@ -357,16 +357,11 @@ public function services()
         $categorySlug = $request->get('category');
         $tagSlug = $request->get('tag');
 
-        // Get featured article (only if no filters applied)
-        $featuredArticle = null;
+        // Use the latest created article as the blog hero when no filters are active.
+        $latestHeroArticle = null;
         if (!$search && !$categorySlug && !$tagSlug) {
-            $featuredArticle = Article::with(['category', 'author'])
+            $latestHeroArticle = Article::with(['category', 'author'])
                 ->published()
-                ->where(function($query) {
-                    $query->where('is_featured', true)
-                        ->orWhereNull('is_featured');
-                })
-                ->orderBy('is_featured', 'desc')
                 ->orderBy('created_at', 'desc')
                 ->first();
         }
@@ -374,8 +369,8 @@ public function services()
         // Build articles query
         $articlesQuery = Article::with(['category', 'author', 'tags'])
             ->published()
-            ->when($featuredArticle, function ($query) use ($featuredArticle) {
-                return $query->where('id', '!=', $featuredArticle->id);
+            ->when($latestHeroArticle, function ($query) use ($latestHeroArticle) {
+                return $query->where('id', '!=', $latestHeroArticle->id);
             })
             ->when($search, function ($query) use ($search) {
                 return $query->where(function ($q) use ($search) {
@@ -411,7 +406,7 @@ public function services()
         $currentTag = $tagSlug ? \App\Models\Tag::where('slug', $tagSlug)->first() : null;
 
         return view('pages.blog', compact(
-            'featuredArticle', 
+            'latestHeroArticle',
             'articles', 
             'categories', 
             'popularTags',
@@ -520,4 +515,3 @@ public function services()
         ));
     }
 }
-
