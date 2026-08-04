@@ -105,6 +105,7 @@ Route::prefix('asset-matching')->name('matching.')->group(function () {
         Route::post('/aset-saya/{asset}/submit', [OwnerAssetController::class, 'submit'])->name('assets.submit');
         Route::post('/aset-saya/{asset}/arsipkan', [OwnerAssetController::class, 'archive'])->name('assets.archive');
         Route::get('/aset-saya/{asset}/sertifikat', [OwnerAssetController::class, 'certificate'])->name('assets.certificate');
+        Route::get('/aset-saya/{asset}/sertifikat/preview', [OwnerAssetController::class, 'certificatePreview'])->name('assets.certificate.preview');
         Route::post('/aset/{asset}/minat', [AssetInterestController::class, 'store'])->name('interests.store');
     });
 });

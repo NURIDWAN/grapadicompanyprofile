@@ -48,7 +48,10 @@ class AssetMatchingTest extends TestCase
 
         $other = User::factory()->create(['whatsapp' => '081111111111']);
         $this->actingAs($other)->get(route('matching.assets.certificate', $asset))->assertForbidden();
+        $this->actingAs($other)->get(route('matching.assets.certificate.preview', $asset))->assertForbidden();
         $this->actingAs($owner)->get(route('matching.assets.certificate', $asset))->assertOk();
+        $this->actingAs($owner)->get(route('matching.assets.certificate.preview', $asset))
+            ->assertOk()->assertHeader('content-disposition', 'inline; filename="test.pdf"');
     }
 
     public function test_owner_can_create_draft_with_private_certificate_and_public_photos(): void

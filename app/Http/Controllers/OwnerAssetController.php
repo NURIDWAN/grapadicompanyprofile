@@ -106,6 +106,18 @@ class OwnerAssetController extends Controller
         return Storage::disk('local')->download($asset->certificate_file);
     }
 
+    public function certificatePreview(Asset $asset)
+    {
+        $this->authorize('view', $asset);
+        abort_unless(Storage::disk('local')->exists($asset->certificate_file), 404);
+
+        return Storage::disk('local')->response(
+            $asset->certificate_file,
+            basename($asset->certificate_file),
+            ['Content-Disposition' => 'inline; filename="'.basename($asset->certificate_file).'"']
+        );
+    }
+
     private function validated(Request $request, ?Asset $asset = null): array
     {
         $validDeleteCount = $asset ? $asset->photos()->whereIn('id', (array) $request->input('delete_photo_ids', []))->count() : 0;
