@@ -171,10 +171,7 @@ class AssetMatchingTest extends TestCase
 
     public function test_admin_can_open_asset_matching_resources_without_certificate_document(): void
     {
-        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view_any_asset::category', 'guard_name' => 'web']);
-        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view_any_facility', 'guard_name' => 'web']);
-        $adminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-        $adminRole->givePermissionTo(['view_any_asset::category', 'view_any_facility']);
+        $adminRole = Role::firstOrCreate(['name' => 'admin', 'guard_name' => 'web']);
         $admin = User::factory()->create(['is_active' => true]);
         $admin->assignRole($adminRole);
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
