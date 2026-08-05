@@ -80,8 +80,8 @@ Route::get('/robots.txt', function () {
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::post('/newsletter/unsubscribe', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
-// Grapadi Asset Matching
-Route::prefix('asset-matching')->name('matching.')->group(function () {
+// Grapadi Capital Connect (Asset Matching)
+Route::prefix('capital-connect')->name('matching.')->group(function () {
     Route::get('/', [AssetMatchingController::class, 'index'])->name('index');
     Route::get('/aset/{asset}', [AssetMatchingController::class, 'show'])->name('show');
 
@@ -108,6 +108,21 @@ Route::prefix('asset-matching')->name('matching.')->group(function () {
         Route::post('/aset/{asset}/minat', [AssetInterestController::class, 'store'])->name('interests.store');
     });
 });
+
+// Legacy 301 redirects for /asset-matching and /capital
+Route::get('/asset-matching', function () {
+    return redirect()->route('matching.index', [], 301);
+});
+Route::get('/asset-matching/{path}', function ($path) {
+    return redirect('/capital-connect/'.$path, 301);
+})->where('path', '.*');
+
+Route::get('/capital', function () {
+    return redirect()->route('matching.index', [], 301);
+});
+Route::get('/capital/{path}', function ($path) {
+    return redirect('/capital-connect/'.$path, 301);
+})->where('path', '.*');
 
 // Redirect /login to Filament admin login
 Route::get('/login', function () {

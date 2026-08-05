@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectGuestsTo(fn ($request) => $request->is('asset-matching*')
+        $middleware->redirectGuestsTo(fn ($request) => ($request->is('capital-connect*') || $request->is('capital*') || $request->is('asset-matching*'))
             ? route('matching.login')
             : route('login'));
     })

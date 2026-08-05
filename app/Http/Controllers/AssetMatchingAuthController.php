@@ -102,7 +102,7 @@ class AssetMatchingAuthController extends Controller
     private function rememberSafeRedirect(Request $request): void
     {
         $redirect = $request->string('redirect')->toString();
-        if ($redirect && str_starts_with($redirect, url('/asset-matching'))) {
+        if ($redirect && (str_starts_with($redirect, url('/capital-connect')) || str_starts_with($redirect, url('/capital')) || str_starts_with($redirect, url('/asset-matching')))) {
             $request->session()->put('url.intended', $redirect);
         }
     }

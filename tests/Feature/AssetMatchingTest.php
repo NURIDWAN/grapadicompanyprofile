@@ -220,8 +220,9 @@ class AssetMatchingTest extends TestCase
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $asset = $this->makeAsset($owner, AssetStatus::Published, ['name' => 'Tanah Industri Cikarang']);
 
-        $this->get('/asset-matching/aset/'.$asset->slug)->assertOk();
-        $this->get('/asset-matching/aset/'.$asset->public_id)
+        $this->get('/capital-connect/aset/'.$asset->slug)->assertOk();
+        $this->get('/asset-matching/aset/'.$asset->slug)->assertRedirect(route('matching.show', $asset))->assertStatus(301);
+        $this->get('/capital-connect/aset/'.$asset->public_id)
             ->assertRedirect(route('matching.show', $asset))->assertStatus(301);
     }
 
@@ -242,7 +243,7 @@ class AssetMatchingTest extends TestCase
         $oldSlug = $asset->slug;
         $asset->update(['slug' => 'aset-uji-baru']);
 
-        $this->get('/asset-matching/aset/'.$oldSlug)->assertRedirect(route('matching.show', $asset))->assertStatus(301);
+        $this->get('/capital-connect/aset/'.$oldSlug)->assertRedirect(route('matching.show', $asset))->assertStatus(301);
         $asset->update(['listing_status' => AssetListingStatus::Inactive]);
         $this->get(route('matching.show', $asset))->assertNotFound();
         $this->get(route('matching.index'))->assertDontSee($asset->name);
