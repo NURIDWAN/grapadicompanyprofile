@@ -1,7 +1,15 @@
 @extends('layouts.app')
 
-@section('title', $asset->name.' | Grapadi Asset Matching')
-@section('description', $asset->name.' di '.$asset->city.', '.$asset->province.' — peluang aset terkurasi di Grapadi Asset Matching.')
+@section('title', $asset->seo_title)
+@section('description', $asset->meta_description)
+@push('meta')
+<link rel="canonical" href="{{ route('matching.show', $asset) }}">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ $asset->seo_title }}">
+<meta property="og:description" content="{{ $asset->meta_description }}">
+<meta property="og:url" content="{{ route('matching.show', $asset) }}">
+@if($asset->photos->first())<meta property="og:image" content="{{ asset('storage/'.$asset->photos->first()->path) }}">@endif
+@endpush
 
 @php($photoCount = $asset->photos->count())
 
@@ -11,7 +19,7 @@
     <div class="border-b border-[#1e402f] bg-[#061d15] px-4 sm:px-6 lg:px-8">
         <div class="mx-auto flex min-h-12 max-w-[1500px] items-center justify-between gap-4">
             <nav class="flex min-w-0 items-center gap-2 text-[11px] text-gray-500" aria-label="Breadcrumb">
-                <a href="{{ route('matching.index') }}" class="shrink-0 transition hover:text-primary">Asset Matching</a>
+                <a href="{{ route('matching.index') }}" class="shrink-0 transition hover:text-primary">Capital Connect</a>
                 <span>/</span>
                 <span class="truncate text-gray-300">{{ $asset->category->name }}</span>
                 <span>/</span>
@@ -66,7 +74,7 @@
                                     >
                                         <img
                                             src="{{ asset('storage/'.$photo->path) }}"
-                                            alt="Foto {{ $asset->name }} {{ $loop->iteration }}"
+                                            alt="{{ $photo->alt_text ?: 'Foto '.$asset->name.' '.$loop->iteration }}"
                                             class="h-full w-full object-cover object-center"
                                         >
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"></div>
@@ -96,7 +104,7 @@
                                             class="relative h-14 w-20 shrink-0 overflow-hidden rounded border-2 transition"
                                             aria-label="Tampilkan foto {{ $loop->iteration }}"
                                         >
-                                            <img src="{{ asset('storage/'.$photo->path) }}" alt="Thumbnail {{ $asset->name }} {{ $loop->iteration }}" class="h-full w-full object-cover">
+                                            <img src="{{ asset('storage/'.$photo->path) }}" alt="Thumbnail: {{ $photo->alt_text ?: $asset->name }}" class="h-full w-full object-cover">
                                         </button>
                                     @endforeach
                                 </div>
@@ -122,12 +130,15 @@
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="rounded-sm bg-primary/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-primary">{{ $asset->category->name }}</span>
                             <span class="rounded-sm border border-[#2c503d] px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-gray-400">{{ $asset->objective->label() }}</span>
+                            <span class="rounded-sm border border-primary/40 px-2.5 py-1 text-[9px] font-semibold uppercase tracking-wider text-primary">{{ $asset->listing_status->label() }}</span>
                         </div>
                         <h1 class="mt-3 font-display text-3xl font-semibold leading-[1.02] text-white xl:text-4xl">{{ $asset->name }}</h1>
                         <p class="mt-3 flex items-start gap-2 text-sm text-gray-400">
                             <span class="material-icons-outlined mt-0.5 text-base text-primary">location_on</span>
-                            {{ $asset->city }}, {{ $asset->province }}
+                            {{ collect([$asset->village, $asset->district, $asset->city, $asset->province])->filter()->implode(', ') }}
                         </p>
+                        <p class="mt-4 font-display text-2xl font-semibold text-primary">{{ $asset->price !== null ? 'Rp '.number_format((float) $asset->price, 0, ',', '.') : 'Hubungi Grapadi' }}</p>
+                        @if($asset->price_per_sqm)<p class="mt-1 text-xs text-gray-500">Rp {{ number_format((float) $asset->price_per_sqm, 0, ',', '.') }}/m²</p>@endif
                     </div>
 
                     <dl class="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-[#234634] bg-[#234634]">
@@ -135,7 +146,7 @@
                             ['straighten', 'Luas Aset', number_format((float) $asset->area_sqm, 0, ',', '.').' m²'],
                             ['description', 'Sertifikat', $asset->certificate_type],
                             ['verified', 'Kondisi', $asset->condition->label()],
-                            ['account_balance', 'Kepemilikan', $asset->ownership_status->label()],
+                            ['sell', 'Harga/m²', $asset->price_per_sqm ? 'Rp '.number_format((float) $asset->price_per_sqm, 0, ',', '.') : 'Hubungi Grapadi'],
                             ['business_center', 'Pemanfaatan', $asset->utilization_status->label()],
                             ['flag', 'Tujuan', $asset->objective->label()],
                         ] as [$icon, $term, $value])
@@ -149,8 +160,8 @@
 
                     <div class="mt-3 rounded-md border border-primary/20 bg-[#0b2a1f] p-3">
                         <div class="flex gap-3">
-                            <span class="material-icons-outlined text-xl text-primary">lock</span>
-                            <p class="text-[11px] leading-5 text-gray-400">Alamat lengkap, nomor sertifikat, dokumen, dan identitas pemilik dijaga oleh Grapadi.</p>
+                            <span class="material-icons-outlined text-xl text-primary">location_on</span>
+                            <div><p class="text-[11px] leading-5 text-gray-300">{{ $asset->full_address }}</p>@if($asset->google_maps_url)<a href="{{ $asset->google_maps_url }}" target="_blank" rel="noopener noreferrer" class="mt-2 inline-flex items-center gap-1 text-[11px] font-semibold text-primary">Buka Google Maps <span aria-hidden="true">↗</span></a>@endif</div>
                         </div>
                     </div>
 
@@ -163,17 +174,17 @@
                                     </a>
                                     <a href="{{ route('matching.dashboard') }}" class="inline-flex h-12 items-center justify-center rounded-md border border-[#31533f] px-4 text-xs text-gray-300 hover:border-primary hover:text-primary">Dashboard</a>
                                 </div>
-                            @else
+                            @elseif($asset->listing_status !== \App\Enums\AssetListingStatus::Closed)
                                 <form method="POST" action="{{ route('matching.interests.store', $asset) }}">@csrf
                                     <button class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-bold text-background-dark transition hover:bg-primary-300">
                                         <span class="material-icons-outlined text-lg">handshake</span> Tambah Minat
                                     </button>
                                 </form>
-                            @endif
+                            @else<div class="flex h-12 w-full items-center justify-center rounded-md border border-[#31533f] text-xs font-semibold text-gray-400">Aset tidak menerima minat baru</div>@endif
                         @else
-                            <a href="{{ route('matching.login', ['redirect' => url()->current()]) }}" class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-bold text-background-dark transition hover:bg-primary-300">
+                            @if($asset->listing_status !== \App\Enums\AssetListingStatus::Closed)<a href="{{ route('matching.login', ['redirect' => url()->current()]) }}" class="inline-flex h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-sm font-bold text-background-dark transition hover:bg-primary-300">
                                 <span class="material-icons-outlined text-lg">login</span> Masuk untuk Tambah Minat
-                            </a>
+                            </a>@else<div class="flex h-12 w-full items-center justify-center rounded-md border border-[#31533f] text-xs font-semibold text-gray-400">Aset tidak menerima minat baru</div>@endif
                         @endauth
                         <p class="mt-2 text-center text-[9px] leading-4 text-gray-600">Minat akan diteruskan kepada tim Grapadi, bukan langsung kepada pemilik.</p>
                     </div>
@@ -184,11 +195,11 @@
             <div class="mt-3 grid gap-3 lg:grid-cols-3">
                 <section class="rounded-md border border-[#234634] bg-[#071f17] p-5">
                     <div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">fact_check</span><h2 class="font-display text-xl font-semibold text-white">Kondisi Aset</h2></div>
-                    <p class="mt-3 text-xs leading-6 text-gray-400">{{ $asset->condition_notes ?: 'Aset tercatat dalam kondisi '.$asset->condition->label().'. Detail tambahan dapat dibahas melalui tim Grapadi.' }}</p>
+                    <p class="mt-3 text-xs leading-6 text-gray-400">Aset tercatat dalam kondisi {{ $asset->condition->label() }}.</p>
                 </section>
                 <section class="rounded-md border border-[#234634] bg-[#071f17] p-5">
-                    <div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">gavel</span><h2 class="font-display text-xl font-semibold text-white">Kepemilikan</h2></div>
-                    <p class="mt-3 text-xs leading-6 text-gray-400">{{ $asset->ownership_notes ?: 'Status kepemilikan tercatat sebagai '.$asset->ownership_status->label().'. Dokumen legal tidak ditampilkan kepada publik.' }}</p>
+                    <div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">description</span><h2 class="font-display text-xl font-semibold text-white">Deskripsi</h2></div>
+                    <p class="mt-3 whitespace-pre-line text-xs leading-6 text-gray-400">{{ $asset->description }}</p>
                 </section>
                 <section class="rounded-md border border-[#234634] bg-[#071f17] p-5">
                     <div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">apartment</span><h2 class="font-display text-xl font-semibold text-white">Pemanfaatan</h2></div>
@@ -196,11 +207,15 @@
                 </section>
             </div>
 
+            @if($asset->facilities->isNotEmpty())
+            <section class="mt-3 rounded-md border border-[#234634] bg-[#071f17] p-5"><div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">checklist</span><h2 class="font-display text-xl font-semibold text-white">Fasilitas</h2></div><div class="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">@foreach($asset->facilities as $facility)<div class="flex items-center gap-2 rounded-md border border-[#234634] bg-[#082219] px-3 py-2 text-xs text-gray-300"><span class="material-icons-outlined text-base text-primary">{{ $facility->icon ?: 'check_circle' }}</span>{{ $facility->name }}</div>@endforeach</div></section>
+            @endif
+
             <section class="mt-3 grid overflow-hidden rounded-md border border-[#234634] bg-[#071f17] sm:grid-cols-2 lg:grid-cols-4">
                 @foreach([
                     ['01', 'Data Terinventarisasi', 'Informasi dasar aset tercatat di sistem Grapadi.'],
                     ['02', 'Screening Internal', 'Kelengkapan, legalitas dasar, dan foto diperiksa.'],
-                    ['03', 'Aset Dipublikasikan', 'Data sensitif tetap tersembunyi dari publik.'],
+                    ['03', 'Aset Dipublikasikan', 'Data sensitif tetap terlindungi.'],
                     ['04', 'Minat Ditindaklanjuti', 'Tim Grapadi menghubungkan pihak yang relevan.'],
                 ] as [$number, $title, $description])
                     <div class="border-[#234634] p-5 [&:not(:last-child)]:border-b sm:[&:not(:last-child)]:border-b-0 sm:[&:not(:last-child)]:border-r">

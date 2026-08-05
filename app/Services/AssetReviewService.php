@@ -31,6 +31,7 @@ class AssetReviewService
             $asset->update([
                 'status' => $status, 'latest_review_notes' => $notes, 'reviewed_by' => $reviewer->id,
                 'reviewed_at' => now(), 'published_at' => $status === AssetStatus::Published ? now() : null,
+                'slug_locked_at' => $status === AssetStatus::Published ? ($asset->slug_locked_at ?: now()) : $asset->slug_locked_at,
             ]);
         });
 

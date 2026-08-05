@@ -3,12 +3,14 @@
 namespace Tests\Feature;
 
 use App\Enums\AssetCondition;
+use App\Enums\AssetListingStatus;
 use App\Enums\AssetObjective;
 use App\Enums\AssetOwnershipStatus;
 use App\Enums\AssetStatus;
 use App\Enums\AssetUtilizationStatus;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\Facility;
 use App\Models\Lead;
 use App\Models\User;
 use App\Notifications\AssetReviewResultNotification;
@@ -16,6 +18,7 @@ use App\Services\AssetReviewService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -36,49 +39,50 @@ class AssetMatchingTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'whatsapp' => '081234567890']);
     }
 
-    public function test_owner_can_submit_draft_and_other_user_cannot_access_private_certificate(): void
+    public function test_owner_can_submit_draft(): void
     {
-        Storage::fake('local');
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $asset = $this->makeAsset($owner);
-        Storage::disk('local')->put($asset->certificate_file, 'private document');
 
         $this->actingAs($owner)->post(route('matching.assets.submit', $asset))->assertRedirect(route('matching.dashboard'));
         $this->assertSame(AssetStatus::PendingReview, $asset->fresh()->status);
-
-        $other = User::factory()->create(['whatsapp' => '081111111111']);
-        $this->actingAs($other)->get(route('matching.assets.certificate', $asset))->assertForbidden();
-        $this->actingAs($other)->get(route('matching.assets.certificate.preview', $asset))->assertForbidden();
-        $this->actingAs($owner)->get(route('matching.assets.certificate', $asset))->assertOk();
-        $this->actingAs($owner)->get(route('matching.assets.certificate.preview', $asset))
-            ->assertOk()->assertHeader('content-disposition', 'inline; filename="test.pdf"');
     }
 
-    public function test_owner_can_create_draft_with_private_certificate_and_public_photos(): void
+    public function test_owner_can_create_draft_without_certificate_document_and_with_public_photos(): void
     {
-        Storage::fake('local');
         Storage::fake('public');
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $category = AssetCategory::create(['name' => 'Gudang', 'slug' => 'gudang', 'is_active' => true]);
 
+        $this->actingAs($owner)->get(route('matching.assets.create'))->assertOk()
+            ->assertSee('Informasi Aset')->assertSee('SEO Otomatis')
+            ->assertDontSee('name="certificate_file"', false);
+
         $response = $this->actingAs($owner)->post(route('matching.assets.store'), [
             'asset_category_id' => $category->id, 'name' => 'Gudang Baru', 'province' => 'Jawa Barat',
-            'city' => 'Bekasi', 'full_address' => 'Alamat privat', 'area_sqm' => 500,
+            'slug' => 'gudang-baru', 'listing_status' => AssetListingStatus::Available->value,
+            'city' => 'Bekasi', 'district' => 'Cikarang Barat', 'village' => 'Telaga Asih',
+            'full_address' => 'Alamat publik', 'google_maps_url' => 'https://maps.google.com/?q=-6.2,107.1',
+            'description' => 'Gudang siap digunakan.', 'area_sqm' => 500, 'price' => 2500000000,
+            'price_per_sqm' => 4750000,
             'certificate_type' => 'HGB', 'certificate_number' => 'HGB-001',
-            'certificate_file' => UploadedFile::fake()->create('sertifikat.pdf', 100, 'application/pdf'),
             'condition' => AssetCondition::Good->value, 'ownership_status' => AssetOwnershipStatus::Company->value,
             'utilization_status' => AssetUtilizationStatus::Vacant->value, 'objective' => AssetObjective::FindInvestor->value,
             'photos' => [UploadedFile::fake()->image('depan.jpg')],
+            'photo_alt_texts' => ['Tampak depan Gudang Baru'],
         ]);
 
         $asset = Asset::where('name', 'Gudang Baru')->firstOrFail();
         $response->assertRedirect(route('matching.assets.edit', $asset));
         $this->assertSame(AssetStatus::Draft, $asset->status);
-        Storage::disk('local')->assertExists($asset->certificate_file);
+        $this->assertFalse(Schema::hasColumn('assets', 'certificate_file'));
+        $this->assertArrayNotHasKey('certificate_file', $asset->getAttributes());
         Storage::disk('public')->assertExists($asset->photos()->first()->path);
+        $this->assertSame('Tampak depan Gudang Baru', $asset->photos()->first()->alt_text);
+        $this->assertSame('4750000.00', $asset->price_per_sqm);
     }
 
-    public function test_catalog_only_shows_published_assets_without_private_data(): void
+    public function test_catalog_only_shows_publicly_listed_assets_and_keeps_certificate_private(): void
     {
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $published = $this->makeAsset($owner, AssetStatus::Published, ['name' => 'Gudang Terbit']);
@@ -87,7 +91,7 @@ class AssetMatchingTest extends TestCase
         $this->get(route('matching.index'))->assertOk()->assertSee('Gudang Terbit')->assertDontSee('Gudang Rahasia');
         $this->get(route('matching.show', $published))->assertOk()
             ->assertSee('Gudang Terbit')->assertSee($published->certificate_type)
-            ->assertDontSee($published->certificate_number)->assertDontSee($published->full_address);
+            ->assertDontSee($published->certificate_number)->assertSee($published->full_address);
         $this->get(route('matching.show', $pending))->assertNotFound();
     }
 
@@ -144,7 +148,9 @@ class AssetMatchingTest extends TestCase
 
         $this->actingAs($owner)->put(route('matching.assets.update', $asset), [
             'asset_category_id' => $asset->asset_category_id, 'name' => 'Aset Diperbarui',
-            'province' => $asset->province, 'city' => $asset->city, 'full_address' => $asset->full_address,
+            'slug' => 'slug-yang-tidak-boleh-dipakai', 'listing_status' => AssetListingStatus::Available->value,
+            'province' => $asset->province, 'city' => $asset->city, 'district' => $asset->district,
+            'village' => $asset->village, 'full_address' => $asset->full_address, 'description' => $asset->description,
             'area_sqm' => 1200, 'certificate_type' => $asset->certificate_type,
             'certificate_number' => $asset->certificate_number, 'condition' => AssetCondition::Good->value,
             'ownership_status' => AssetOwnershipStatus::Personal->value,
@@ -154,23 +160,70 @@ class AssetMatchingTest extends TestCase
         $asset->refresh();
         $this->assertSame(AssetStatus::PendingReview, $asset->status);
         $this->assertNull($asset->published_at);
+        $this->assertSame('aset-uji', $asset->slug);
         $this->get(route('matching.show', $asset))->assertNotFound();
     }
 
-    public function test_admin_can_open_asset_matching_resources_and_private_document(): void
+    public function test_admin_can_open_asset_matching_resources_without_certificate_document(): void
     {
-        Storage::fake('local');
         $adminRole = Role::create(['name' => 'admin', 'guard_name' => 'web']);
         $admin = User::factory()->create(['is_active' => true]);
         $admin->assignRole($adminRole);
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $asset = $this->makeAsset($owner, AssetStatus::PendingReview);
-        Storage::disk('local')->put($asset->certificate_file, 'private document');
 
         $this->actingAs($admin)->get(route('filament.admin.resources.assets.index'))->assertOk();
-        $this->actingAs($admin)->get(route('filament.admin.resources.assets.view', $asset))->assertOk();
+        $this->actingAs($admin)->get(route('filament.admin.resources.assets.view', $asset))
+            ->assertOk()->assertDontSee('Dokumen Sertifikat');
         $this->actingAs($admin)->get(route('filament.admin.resources.asset-categories.index'))->assertOk();
-        $this->actingAs($admin)->get(route('matching.assets.certificate', $asset))->assertOk();
+        $this->actingAs($admin)->get(route('filament.admin.resources.facilities.index'))->assertOk();
+        $this->assertFalse(app('router')->has('matching.assets.certificate'));
+        $this->assertFalse(app('router')->has('matching.assets.certificate.preview'));
+    }
+
+    public function test_public_asset_uses_slug_and_legacy_uuid_redirects_permanently(): void
+    {
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Published, ['name' => 'Tanah Industri Cikarang']);
+
+        $this->get('/asset-matching/aset/'.$asset->slug)->assertOk();
+        $this->get('/asset-matching/aset/'.$asset->public_id)
+            ->assertRedirect(route('matching.show', $asset))->assertStatus(301);
+    }
+
+    public function test_price_per_sqm_is_automatic_but_can_be_overridden(): void
+    {
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $automatic = $this->makeAsset($owner, overrides: ['area_sqm' => 1000, 'price' => 5000000000]);
+        $overridden = $this->makeAsset($owner, overrides: ['name' => 'Aset Harga Khusus', 'area_sqm' => 1000, 'price' => 5000000000, 'price_per_sqm' => 4500000]);
+
+        $this->assertSame('5000000.00', $automatic->price_per_sqm);
+        $this->assertSame('4500000.00', $overridden->price_per_sqm);
+    }
+
+    public function test_old_slug_redirects_and_inactive_asset_is_hidden(): void
+    {
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Published);
+        $oldSlug = $asset->slug;
+        $asset->update(['slug' => 'aset-uji-baru']);
+
+        $this->get('/asset-matching/aset/'.$oldSlug)->assertRedirect(route('matching.show', $asset))->assertStatus(301);
+        $asset->update(['listing_status' => AssetListingStatus::Inactive]);
+        $this->get(route('matching.show', $asset))->assertNotFound();
+        $this->get(route('matching.index'))->assertDontSee($asset->name);
+    }
+
+    public function test_facilities_alt_text_and_assets_sitemap_are_public(): void
+    {
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Published);
+        $facility = Facility::firstOrCreate(['slug' => 'akses-tol'], ['name' => 'Akses Tol', 'is_active' => true]);
+        $asset->facilities()->attach($facility);
+        $asset->photos()->create(['path' => 'assets/test.jpg', 'alt_text' => 'Tampak depan aset industri', 'sort_order' => 0]);
+
+        $this->get(route('matching.show', $asset))->assertOk()->assertSee('Akses Tol')->assertSee('Tampak depan aset industri');
+        $this->get(route('sitemap.assets'))->assertOk()->assertSee(route('matching.show', $asset), false);
     }
 
     private function makeAsset(User $owner, AssetStatus $status = AssetStatus::Draft, array $overrides = []): Asset
@@ -179,11 +232,14 @@ class AssetMatchingTest extends TestCase
 
         return Asset::create([...[
             'owner_id' => $owner->id, 'asset_category_id' => $category->id, 'name' => 'Aset Uji',
-            'province' => 'DKI Jakarta', 'city' => 'Jakarta Selatan', 'full_address' => 'Jl. Privat No. 1',
-            'area_sqm' => 1000, 'certificate_type' => 'SHM', 'certificate_number' => 'SHM-SECRET-123',
-            'certificate_file' => 'asset-certificates/test.pdf', 'condition' => AssetCondition::Good,
+            'listing_status' => AssetListingStatus::Available, 'province' => 'DKI Jakarta', 'city' => 'Jakarta Selatan',
+            'district' => 'Kebayoran Baru', 'village' => 'Senayan', 'full_address' => 'Jl. Publik No. 1',
+            'google_maps_url' => 'https://maps.google.com/?q=-6.2,106.8', 'description' => 'Deskripsi lengkap aset uji.',
+            'area_sqm' => 1000, 'price' => 5000000000, 'certificate_type' => 'SHM', 'certificate_number' => 'SHM-SECRET-123',
+            'condition' => AssetCondition::Good,
             'ownership_status' => AssetOwnershipStatus::Personal, 'utilization_status' => AssetUtilizationStatus::Vacant,
             'objective' => AssetObjective::Sell, 'status' => $status, 'published_at' => $status === AssetStatus::Published ? now() : null,
+            'slug_locked_at' => $status === AssetStatus::Published ? now() : null,
         ], ...$overrides]);
     }
 }

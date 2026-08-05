@@ -1,44 +1,42 @@
 @extends('layouts.app')
 
-@section('title', 'Grapadi Asset Matching')
+@section('title', 'Capital Connect')
 @section('description', 'Temukan peluang aset terkurasi dan hubungkan kebutuhan Anda melalui Grapadi.')
 
 @section('content')
 <div class="min-h-screen bg-[#03150e] pt-20">
     {{-- Hero --}}
-    <section class="relative isolate overflow-hidden border-b border-[#204331]">
+    <section class="relative isolate overflow-hidden border-b border-[#204331] bg-[#03150e]">
         <img
             src="{{ asset('image/background/image.png') }}"
-            alt="Gedung komersial"
-            class="absolute inset-0 -z-20 h-full w-full object-cover object-[72%_55%]"
+            alt="Gedung komersial Capital Connect"
+            class="absolute inset-0 -z-30 h-full w-full object-cover object-[68%_center] sm:object-[72%_center]"
         >
-        <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,#03150e_0%,#052018_f2_42%,#052018_75_62%,transparent_100%)]"></div>
-        <div class="absolute inset-0 -z-10 bg-[linear-gradient(0deg,#03150e_0%,transparent_45%)]"></div>
+        <div class="absolute inset-0 -z-20 bg-[linear-gradient(90deg,#02110b_0%,#041b12_42%,rgba(4,27,18,.82)_55%,rgba(3,21,14,.2)_100%)]"></div>
+        <div class="absolute inset-0 -z-20 bg-[linear-gradient(0deg,#03150e_0%,rgba(3,21,14,.12)_46%,rgba(3,21,14,.35)_100%)]"></div>
+        <div class="absolute -left-32 top-10 -z-10 h-96 w-96 rounded-full bg-primary/5 blur-3xl"></div>
 
-        <div class="mx-auto flex min-h-[310px] max-w-[1500px] items-center px-5 py-10 sm:px-8 lg:px-10">
-            <div class="max-w-2xl">
-                <p class="text-[10px] font-semibold uppercase tracking-[0.28em] text-primary">Grapadi Asset Matching</p>
-                <h1 class="mt-3 font-display text-4xl font-medium leading-[0.95] text-white sm:text-5xl lg:text-[4.25rem]">
-                    Mengoptimalkan Aset.<br>
-                    <span class="text-primary">Menghubungkan Peluang.</span>
+        <div class="mx-auto grid min-h-[560px] max-w-[1500px] items-center px-5 py-12 sm:px-8 sm:py-16 lg:grid-cols-12 lg:px-10 lg:py-14">
+            <div class="lg:col-span-7 xl:col-span-6">
+                <h1 class="font-display text-[3.25rem] font-medium leading-none tracking-[-.025em] text-primary sm:text-6xl lg:text-[4.5rem]">
+                    Capital Connect
                 </h1>
-                <p class="mt-5 max-w-xl text-sm leading-6 text-gray-300 sm:text-base">
-                    Platform kurasi aset untuk mempertemukan pemilik aset dengan investor, operator, dan mitra strategis secara terarah.
-                </p>
-                <div class="mt-6 flex flex-wrap gap-3">
+                <p class="mt-4 max-w-2xl font-display text-2xl font-medium leading-tight text-white sm:text-3xl lg:text-[2.15rem]">Connecting Capital, Assets &amp; Strategic Opportunities.</p>
+                <div class="mt-7 flex flex-wrap gap-3">
                     @auth
-                        <a href="{{ route('matching.dashboard') }}" class="inline-flex min-h-10 items-center rounded-md bg-primary px-5 py-2 text-xs font-bold text-[#092016] transition hover:bg-primary-300">
-                            Dashboard Saya
+                        <a href="{{ route('matching.dashboard') }}" class="inline-flex min-h-12 items-center gap-2 rounded-md bg-primary px-6 py-3 text-xs font-bold text-[#092016] transition hover:-translate-y-0.5 hover:bg-primary-300">
+                            Buka Dashboard <span aria-hidden="true">→</span>
                         </a>
                     @else
-                        <a href="{{ route('matching.register') }}" class="inline-flex min-h-10 items-center rounded-md bg-primary px-5 py-2 text-xs font-bold text-[#092016] transition hover:bg-primary-300">
-                            Daftarkan Aset
+                        <a href="{{ route('matching.register') }}" class="inline-flex min-h-12 items-center gap-2 rounded-md bg-primary px-6 py-3 text-xs font-bold text-[#092016] transition hover:-translate-y-0.5 hover:bg-primary-300">
+                            Daftarkan Aset <span aria-hidden="true">→</span>
                         </a>
-                        <a href="{{ route('matching.login') }}" class="inline-flex min-h-10 items-center rounded-md border border-primary/60 bg-[#061b13]/80 px-5 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10">
+                        <a href="{{ route('matching.login') }}" class="inline-flex min-h-12 items-center rounded-md border border-primary/50 bg-[#061b13]/80 px-6 py-3 text-xs font-semibold text-primary backdrop-blur transition hover:border-primary hover:bg-primary/10">
                             Masuk
                         </a>
                     @endauth
                 </div>
+
             </div>
         </div>
     </section>
@@ -114,7 +112,7 @@
                             <article class="group overflow-hidden rounded-md border border-[#234634] bg-[#082219] shadow-[0_12px_30px_rgba(0,0,0,.16)] transition hover:-translate-y-0.5 hover:border-primary/55">
                                 <a href="{{ route('matching.show', $asset) }}" class="relative block overflow-hidden">
                                     @if($asset->photos->first())
-                                        <img src="{{ asset('storage/'.$asset->photos->first()->path) }}" alt="{{ $asset->name }}" class="h-40 w-full object-cover transition duration-500 group-hover:scale-[1.03]">
+                                        <img src="{{ asset('storage/'.$asset->photos->first()->path) }}" alt="{{ $asset->photos->first()->alt_text ?: $asset->name }}" class="h-40 w-full object-cover transition duration-500 group-hover:scale-[1.03]">
                                     @else
                                         <div class="flex h-40 items-center justify-center bg-[linear-gradient(135deg,#103829,#071c14)] text-gray-500">
                                             <span class="material-icons-outlined text-4xl">domain</span>
@@ -122,6 +120,7 @@
                                     @endif
                                     <div class="absolute inset-0 bg-gradient-to-t from-[#03150e]/70 via-transparent to-transparent"></div>
                                     <span class="absolute left-3 top-3 rounded-sm bg-[#e9d38a] px-2 py-1 text-[9px] font-extrabold uppercase tracking-wide text-[#092016]">{{ $asset->category->name }}</span>
+                                    <span class="absolute right-3 top-3 rounded-sm bg-black/70 px-2 py-1 text-[9px] font-semibold uppercase text-white">{{ $asset->listing_status->label() }}</span>
                                 </a>
 
                                 <div class="p-4">
@@ -133,7 +132,8 @@
                                         {{ $asset->city }}, {{ $asset->province }}
                                     </p>
 
-                                    <dl class="mt-4 grid grid-cols-3 gap-2 border-y border-[#1b3b2b] py-3">
+                                    <p class="mt-3 font-semibold text-primary">{{ $asset->price !== null ? 'Rp '.number_format((float) $asset->price, 0, ',', '.') : 'Hubungi Grapadi' }}</p>
+                                    <dl class="mt-3 grid grid-cols-3 gap-2 border-y border-[#1b3b2b] py-3">
                                         <div><dt class="text-[9px] uppercase tracking-wide text-gray-600">Luas</dt><dd class="mt-1 text-[11px] font-semibold text-gray-200">{{ number_format((float) $asset->area_sqm, 0, ',', '.') }} m²</dd></div>
                                         <div><dt class="text-[9px] uppercase tracking-wide text-gray-600">Sertifikat</dt><dd class="mt-1 truncate text-[11px] font-semibold text-gray-200">{{ $asset->certificate_type }}</dd></div>
                                         <div><dt class="text-[9px] uppercase tracking-wide text-gray-600">Kondisi</dt><dd class="mt-1 truncate text-[11px] font-semibold text-gray-200">{{ $asset->condition->label() }}</dd></div>
@@ -164,7 +164,7 @@
 
                 {{-- Trust sidebar --}}
                 <aside class="rounded-md border border-[#234634] bg-[#071f17] p-5 xl:sticky xl:top-24">
-                    <p class="text-[10px] font-semibold uppercase tracking-[.22em] text-primary">Mengapa Asset Matching?</p>
+                    <p class="text-[10px] font-semibold uppercase tracking-[.22em] text-primary">Mengapa Capital Connect?</p>
                     <div class="mt-4 divide-y divide-[#1c3a2b]">
                         <div class="py-4 first:pt-0">
                             <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">verified_user</span><div><h3 class="font-display text-lg font-semibold text-white">Data melalui screening</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Kelengkapan data, legalitas dasar, dan kualitas foto diperiksa sebelum dipublikasikan.</p></div></div>
@@ -173,7 +173,7 @@
                             <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">handshake</span><div><h3 class="font-display text-lg font-semibold text-white">Terhubung secara terarah</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Minat Anda diteruskan ke tim Grapadi untuk proses tindak lanjut yang relevan.</p></div></div>
                         </div>
                         <div class="py-4">
-                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">lock</span><div><h3 class="font-display text-lg font-semibold text-white">Informasi sensitif aman</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Alamat lengkap, nomor sertifikat, dokumen, dan identitas pemilik tidak ditampilkan publik.</p></div></div>
+                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">lock</span><div><h3 class="font-display text-lg font-semibold text-white">Data sensitif aman</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Nomor sertifikat dan identitas pemilik tidak ditampilkan publik.</p></div></div>
                         </div>
                         <div class="py-4">
                             <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">monitoring</span><div><h3 class="font-display text-lg font-semibold text-white">Pendampingan Grapadi</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Tim kami membantu menjembatani komunikasi awal antara para pihak.</p></div></div>
@@ -194,9 +194,12 @@
                         @endauth
                     </div>
 
-                    <p class="mt-4 text-[9px] leading-4 text-gray-600">
-                        Catatan: screening dasar bukan valuasi, appraisal, studi kelayakan, atau rekomendasi investasi.
-                    </p>
+                    <div class="mt-4 border-t border-[#1c3a2b] pt-4">
+                        <p class="mb-2 text-[10px] font-bold uppercase tracking-[.2em] text-primary">Disclaimer</p>
+                        <p class="text-[10px] leading-[1.7] text-gray-500">
+                            Capital Connect merupakan layanan business matching dan transaction arrangement yang disediakan oleh Grapadi untuk membantu mempertemukan pihak-pihak yang memiliki potensi kerja sama. Grapadi tidak bertindak sebagai pembeli, penjual, broker, agen, maupun pihak dalam transaksi yang terjadi. Seluruh proses negosiasi, verifikasi, uji tuntas (due diligence), pelaksanaan transaksi, serta segala hak dan kewajiban hukum sepenuhnya menjadi tanggung jawab para pihak yang terlibat. Grapadi tidak memberikan jaminan atas keakuratan informasi yang disampaikan oleh masing-masing pihak maupun keberhasilan suatu transaksi, dan tidak bertanggung jawab atas kerugian yang timbul akibat tindakan, wanprestasi, penipuan, atau pelanggaran hukum yang dilakukan oleh salah satu pihak.
+                        </p>
+                    </div>
                 </aside>
             </div>
         </div>

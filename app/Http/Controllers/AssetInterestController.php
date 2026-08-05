@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssetListingStatus;
 use App\Enums\AssetStatus;
 use App\Models\Asset;
 use App\Models\AssetInterest;
@@ -15,6 +16,7 @@ class AssetInterestController extends Controller
     public function store(Request $request, Asset $asset)
     {
         abort_unless($asset->status === AssetStatus::Published, 404);
+        abort_if(in_array($asset->listing_status, [AssetListingStatus::Closed, AssetListingStatus::Inactive], true), 422, 'Aset ini tidak lagi menerima minat baru.');
         abort_if($asset->owner_id === $request->user()->id, 422, 'Anda tidak dapat menambahkan minat pada aset sendiri.');
         try {
             DB::transaction(function () use ($request, $asset) {

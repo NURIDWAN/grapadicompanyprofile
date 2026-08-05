@@ -1,9 +1,9 @@
 @extends('layouts.app')
-@section('title', 'Login Asset Matching | Grapadi')
+@section('title', 'Login Capital Connect | Grapadi')
 @section('content')
 <section class="min-h-screen pt-32 pb-20 px-6">
     <div class="mx-auto max-w-md rounded-2xl border border-border-dark bg-surface-dark p-8 shadow-2xl">
-        <p class="text-sm font-semibold uppercase tracking-widest text-primary">Asset Matching</p>
+        <p class="text-sm font-semibold uppercase tracking-widest text-primary">Capital Connect</p>
         <h1 class="mt-2 font-display text-4xl font-semibold text-white">Masuk ke dashboard</h1>
         <p class="mt-2 text-gray-400">Kelola aset dan pantau minat Anda.</p>
         <div class="mt-6">@include('asset-matching.partials.alerts')</div>

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\AssetListingStatus;
 use App\Enums\AssetStatus;
 use App\Filament\Resources\AssetResource\Pages;
 use App\Models\Asset;
@@ -40,19 +41,23 @@ class AssetResource extends Resource
                 Forms\Components\TextInput::make('owner.name')->label('Pemilik')->disabled(),
                 Forms\Components\TextInput::make('owner.whatsapp')->label('WhatsApp')->disabled(),
                 Forms\Components\TextInput::make('name')->label('Nama Aset')->disabled(),
+                Forms\Components\TextInput::make('slug')->label('Slug')->disabled(),
                 Forms\Components\TextInput::make('category.name')->label('Kategori')->disabled(),
-                Forms\Components\TextInput::make('province')->disabled(), Forms\Components\TextInput::make('city')->disabled(),
+                Forms\Components\TextInput::make('listing_status')->label('Status Listing')->formatStateUsing(fn ($state) => $state instanceof AssetListingStatus ? $state->label() : (AssetListingStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
+                Forms\Components\TextInput::make('province')->disabled(), Forms\Components\TextInput::make('city')->label('Kabupaten/Kota')->disabled(),
+                Forms\Components\TextInput::make('district')->label('Kecamatan')->disabled(), Forms\Components\TextInput::make('village')->label('Kelurahan/Desa')->disabled(),
                 Forms\Components\Textarea::make('full_address')->label('Alamat Lengkap')->disabled()->columnSpanFull(),
+                Forms\Components\TextInput::make('google_maps_url')->label('Google Maps')->disabled()->columnSpanFull(),
                 Forms\Components\TextInput::make('area_sqm')->label('Luas (m²)')->disabled(),
+                Forms\Components\TextInput::make('price')->label('Harga')->formatStateUsing(fn ($state) => $state ? 'Rp '.number_format((float) $state, 0, ',', '.') : 'Hubungi Grapadi')->disabled(),
+                Forms\Components\TextInput::make('price_per_sqm')->label('Harga/m²')->formatStateUsing(fn ($state) => $state ? 'Rp '.number_format((float) $state, 0, ',', '.') : 'Hubungi Grapadi')->disabled(),
+                Forms\Components\Textarea::make('description')->label('Deskripsi')->disabled()->columnSpanFull(),
                 Forms\Components\TextInput::make('certificate_type')->label('Jenis Sertifikat')->disabled(),
                 Forms\Components\TextInput::make('certificate_number')->label('Nomor Sertifikat')->disabled(),
-                Forms\Components\Placeholder::make('certificate_download')->label('Dokumen Sertifikat')->content(fn (Asset $record) => new HtmlString('<a class="text-primary-600 underline" href="'.route('matching.assets.certificate', $record).'">Unduh dokumen privat</a>')),
             ])->columns(2),
             Forms\Components\Section::make('Status Aset')->schema([
                 Forms\Components\TextInput::make('condition')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetCondition ? $state->label() : (\App\Enums\AssetCondition::tryFrom((string) $state)?->label() ?? $state))->disabled(),
                 Forms\Components\Textarea::make('condition_notes')->disabled(),
-                Forms\Components\TextInput::make('ownership_status')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetOwnershipStatus ? $state->label() : (\App\Enums\AssetOwnershipStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-                Forms\Components\Textarea::make('ownership_notes')->disabled(),
                 Forms\Components\TextInput::make('utilization_status')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetUtilizationStatus ? $state->label() : (\App\Enums\AssetUtilizationStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
                 Forms\Components\Textarea::make('utilization_notes')->disabled(),
                 Forms\Components\TextInput::make('objective')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetObjective ? $state->label() : (\App\Enums\AssetObjective::tryFrom((string) $state)?->label() ?? $state))->disabled(),
@@ -60,7 +65,7 @@ class AssetResource extends Resource
             ])->columns(2),
             Forms\Components\Section::make('Foto Aset')->schema([
                 Forms\Components\Placeholder::make('photo_gallery')->hiddenLabel()->content(function (Asset $record) {
-                    $images = $record->photos->map(fn ($photo) => '<img src="'.e(asset('storage/'.$photo->path)).'" alt="Foto aset" style="width:180px;height:120px;object-fit:cover;border-radius:8px">')->implode('');
+                    $images = $record->photos->map(fn ($photo) => '<figure><img src="'.e(asset('storage/'.$photo->path)).'" alt="'.e($photo->alt_text ?: $record->name).'" style="width:180px;height:120px;object-fit:cover;border-radius:8px"><figcaption style="max-width:180px;font-size:11px">'.e($photo->alt_text ?: $record->name).'</figcaption></figure>')->implode('');
 
                     return new HtmlString('<div style="display:flex;flex-wrap:wrap;gap:12px">'.$images.'</div>');
                 }),
@@ -84,6 +89,7 @@ class AssetResource extends Resource
             Tables\Columns\TextColumn::make('name')->label('Aset')->searchable()->sortable(),
             Tables\Columns\TextColumn::make('owner.name')->label('Pemilik')->searchable(),
             Tables\Columns\TextColumn::make('category.name')->label('Kategori'),
+            Tables\Columns\TextColumn::make('listing_status')->label('Listing')->badge()->formatStateUsing(fn ($state) => $state->label()),
             Tables\Columns\TextColumn::make('city')->label('Lokasi')->formatStateUsing(fn ($state, Asset $record) => $state.', '.$record->province),
             Tables\Columns\TextColumn::make('status')->badge()->formatStateUsing(fn ($state) => $state->label())->color(fn ($state) => match ($state) {
                 AssetStatus::Published => 'success', AssetStatus::RevisionRequired => 'danger', AssetStatus::PendingReview => 'warning', default => 'gray'
@@ -94,6 +100,12 @@ class AssetResource extends Resource
             Tables\Filters\SelectFilter::make('asset_category_id')->label('Kategori')->relationship('category', 'name'),
         ])->actions([
             Tables\Actions\ViewAction::make(),
+            Tables\Actions\Action::make('editSlug')->label('Ubah Slug')->icon('heroicon-o-link')->form([
+                Forms\Components\TextInput::make('slug')->required()->maxLength(180)->regex('/^[a-z0-9]+(?:-[a-z0-9]+)*$/')->unique('assets', 'slug', ignoreRecord: true),
+            ])->fillForm(fn (Asset $record) => ['slug' => $record->slug])->action(function (Asset $record, array $data) {
+                $record->update(['slug' => $data['slug']]);
+                Notification::make()->success()->title('Slug diperbarui; URL lama tetap diarahkan.')->send();
+            }),
             Tables\Actions\Action::make('review')->label('Review')->icon('heroicon-o-clipboard-document-check')->color('warning')
                 ->visible(fn (Asset $record) => $record->status === AssetStatus::PendingReview)
                 ->form([

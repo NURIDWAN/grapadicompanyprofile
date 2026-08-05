@@ -13,6 +13,7 @@
 
     <title>@yield('title', $companyName)</title>
     <meta name="description" content="@yield('description', $tagline)">
+    @stack('meta')
 
     @if($favicon)
     <link rel="icon" href="{{ str_starts_with($favicon, 'http') ? $favicon : asset('storage/' . $favicon) }}" type="image/x-icon">

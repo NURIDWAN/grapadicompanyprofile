@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class AssetPhoto extends Model
+class AssetSlugHistory extends Model
 {
-    protected $fillable = ['asset_id', 'path', 'alt_text', 'sort_order'];
+    protected $fillable = ['asset_id', 'slug'];
 
     public function asset(): BelongsTo
     {

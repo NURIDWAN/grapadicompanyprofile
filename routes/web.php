@@ -63,6 +63,7 @@ Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'ind
 Route::get('/sitemap-pages.xml', [\App\Http\Controllers\SitemapController::class, 'pages'])->name('sitemap.pages');
 Route::get('/sitemap-blog.xml', [\App\Http\Controllers\SitemapController::class, 'blog'])->name('sitemap.blog');
 Route::get('/sitemap-services.xml', [\App\Http\Controllers\SitemapController::class, 'services'])->name('sitemap.services');
+Route::get('/sitemap-assets.xml', [\App\Http\Controllers\SitemapController::class, 'assets'])->name('sitemap.assets');
 
 // Robots.txt
 Route::get('/robots.txt', function () {
@@ -104,8 +105,6 @@ Route::prefix('asset-matching')->name('matching.')->group(function () {
         Route::put('/aset-saya/{asset}', [OwnerAssetController::class, 'update'])->name('assets.update');
         Route::post('/aset-saya/{asset}/submit', [OwnerAssetController::class, 'submit'])->name('assets.submit');
         Route::post('/aset-saya/{asset}/arsipkan', [OwnerAssetController::class, 'archive'])->name('assets.archive');
-        Route::get('/aset-saya/{asset}/sertifikat', [OwnerAssetController::class, 'certificate'])->name('assets.certificate');
-        Route::get('/aset-saya/{asset}/sertifikat/preview', [OwnerAssetController::class, 'certificatePreview'])->name('assets.certificate.preview');
         Route::post('/aset/{asset}/minat', [AssetInterestController::class, 'store'])->name('interests.store');
     });
 });

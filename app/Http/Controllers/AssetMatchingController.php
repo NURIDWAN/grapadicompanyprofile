@@ -2,16 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssetListingStatus;
 use App\Enums\AssetObjective;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\AssetSlugHistory;
 use Illuminate\Http\Request;
 
 class AssetMatchingController extends Controller
 {
     public function index(Request $request)
     {
-        $assets = Asset::query()->published()->with(['category', 'photos'])
+        $assets = Asset::query()->publiclyListed()->with(['category', 'photos'])
             ->when($request->filled('q'), fn ($q) => $q->where('name', 'like', '%'.$request->input('q').'%'))
             ->when($request->filled('category'), fn ($q) => $q->whereHas('category', fn ($c) => $c->where('slug', $request->input('category'))))
             ->when($request->filled('province'), fn ($q) => $q->where('province', $request->input('province')))
@@ -23,16 +25,23 @@ class AssetMatchingController extends Controller
             'assets' => $assets,
             'categories' => AssetCategory::where('is_active', true)->orderBy('name')->get(),
             'objectives' => AssetObjective::options(),
-            'provinces' => Asset::published()->distinct()->orderBy('province')->pluck('province'),
-            'cities' => Asset::published()->distinct()->orderBy('city')->pluck('city'),
+            'provinces' => Asset::publiclyListed()->distinct()->orderBy('province')->pluck('province'),
+            'cities' => Asset::publiclyListed()->distinct()->orderBy('city')->pluck('city'),
         ]);
     }
 
-    public function show(Asset $asset)
+    public function show(string $asset)
     {
-        abort_unless($asset->status === \App\Enums\AssetStatus::Published, 404);
+        $resolved = Asset::query()->where('slug', $asset)->orWhere('public_id', $asset)->first();
+        if (! $resolved) {
+            $resolved = AssetSlugHistory::where('slug', $asset)->with('asset')->first()?->asset;
+        }
+        abort_unless($resolved?->status === \App\Enums\AssetStatus::Published && $resolved->listing_status !== AssetListingStatus::Inactive, 404);
+        if ($asset !== $resolved->slug) {
+            return redirect()->route('matching.show', $resolved, 301);
+        }
 
-        return view('asset-matching.show', ['asset' => $asset->load(['category', 'photos'])]);
+        return view('asset-matching.show', ['asset' => $resolved->load(['category', 'photos', 'facilities'])]);
     }
 
     public function dashboard(Request $request)

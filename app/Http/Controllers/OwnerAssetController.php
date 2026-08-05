@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AssetCondition;
+use App\Enums\AssetListingStatus;
 use App\Enums\AssetObjective;
-use App\Enums\AssetOwnershipStatus;
 use App\Enums\AssetStatus;
 use App\Enums\AssetUtilizationStatus;
 use App\Models\Asset;
 use App\Models\AssetCategory;
+use App\Models\Facility;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -25,15 +26,21 @@ class OwnerAssetController extends Controller
     {
         $data = $this->validated($request);
         $photos = $data['photos'];
-        unset($data['photos'], $data['delete_photo_ids']);
-        $data['certificate_file'] = $request->file('certificate_file')->store('asset-certificates');
+        $photoAltTexts = $data['photo_alt_texts'] ?? [];
+        $facilityIds = $data['facilities'] ?? [];
+        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities'], $data['delete_photo_ids']);
         $data['owner_id'] = $request->user()->id;
         $data['status'] = AssetStatus::Draft;
-        $asset = DB::transaction(function () use ($data, $photos) {
+        $asset = DB::transaction(function () use ($data, $photos, $photoAltTexts, $facilityIds) {
             $asset = Asset::create($data);
             foreach ($photos as $index => $photo) {
-                $asset->photos()->create(['path' => $photo->store('assets', 'public'), 'sort_order' => $index]);
+                $asset->photos()->create([
+                    'path' => $photo->store('assets', 'public'),
+                    'alt_text' => ($photoAltTexts[$index] ?? null) ?: $asset->name.' - Foto '.($index + 1),
+                    'sort_order' => $index,
+                ]);
             }
+            $asset->facilities()->sync($facilityIds);
 
             return $asset;
         });
@@ -45,7 +52,7 @@ class OwnerAssetController extends Controller
     {
         $this->authorize('update', $asset);
 
-        return view('asset-matching.assets.form', [...$this->formData(), 'asset' => $asset->load('photos')]);
+        return view('asset-matching.assets.form', [...$this->formData(), 'asset' => $asset->load(['photos', 'facilities'])]);
     }
 
     public function update(Request $request, Asset $asset)
@@ -53,20 +60,25 @@ class OwnerAssetController extends Controller
         $this->authorize('update', $asset);
         $data = $this->validated($request, $asset);
         $newPhotos = $data['photos'] ?? [];
-        unset($data['photos']);
+        $photoAltTexts = $data['photo_alt_texts'] ?? [];
+        $existingPhotoAlt = $data['existing_photo_alt'] ?? [];
+        $facilityIds = $data['facilities'] ?? [];
+        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities']);
         $deletePhotoIds = $data['delete_photo_ids'] ?? [];
         unset($data['delete_photo_ids']);
-        if ($request->hasFile('certificate_file')) {
-            Storage::disk('local')->delete($asset->certificate_file);
-            $data['certificate_file'] = $request->file('certificate_file')->store('asset-certificates');
+        if ($asset->slug_locked_at) {
+            $data['slug'] = $asset->slug;
         }
         if ($asset->status === AssetStatus::Published) {
             $data['status'] = AssetStatus::PendingReview;
             $data['submitted_at'] = now();
             $data['published_at'] = null;
         }
-        DB::transaction(function () use ($asset, $data, $newPhotos, $deletePhotoIds) {
+        DB::transaction(function () use ($asset, $data, $newPhotos, $photoAltTexts, $existingPhotoAlt, $facilityIds, $deletePhotoIds) {
             $asset->update($data);
+            foreach ($existingPhotoAlt as $photoId => $altText) {
+                $asset->photos()->whereKey($photoId)->update(['alt_text' => $altText ?: $asset->name]);
+            }
             $photosToDelete = $asset->photos()->whereIn('id', $deletePhotoIds)->get();
             foreach ($photosToDelete as $photo) {
                 Storage::disk('public')->delete($photo->path);
@@ -74,8 +86,13 @@ class OwnerAssetController extends Controller
             }
             $offset = $asset->photos()->count();
             foreach ($newPhotos as $index => $photo) {
-                $asset->photos()->create(['path' => $photo->store('assets', 'public'), 'sort_order' => $offset + $index]);
+                $asset->photos()->create([
+                    'path' => $photo->store('assets', 'public'),
+                    'alt_text' => ($photoAltTexts[$index] ?? null) ?: $asset->name.' - Foto '.($offset + $index + 1),
+                    'sort_order' => $offset + $index,
+                ]);
             }
+            $asset->facilities()->sync($facilityIds);
         });
 
         return back()->with('success', 'Data aset berhasil diperbarui.');
@@ -98,43 +115,32 @@ class OwnerAssetController extends Controller
         return back()->with('success', 'Aset telah diarsipkan.');
     }
 
-    public function certificate(Asset $asset)
-    {
-        $this->authorize('view', $asset);
-        abort_unless(Storage::disk('local')->exists($asset->certificate_file), 404);
-
-        return Storage::disk('local')->download($asset->certificate_file);
-    }
-
-    public function certificatePreview(Asset $asset)
-    {
-        $this->authorize('view', $asset);
-        abort_unless(Storage::disk('local')->exists($asset->certificate_file), 404);
-
-        return Storage::disk('local')->response(
-            $asset->certificate_file,
-            basename($asset->certificate_file),
-            ['Content-Disposition' => 'inline; filename="'.basename($asset->certificate_file).'"']
-        );
-    }
-
     private function validated(Request $request, ?Asset $asset = null): array
     {
         $validDeleteCount = $asset ? $asset->photos()->whereIn('id', (array) $request->input('delete_photo_ids', []))->count() : 0;
         $photoMax = max(0, 10 - ($asset?->photos()->count() ?? 0) + $validDeleteCount);
         $data = $request->validate([
             'asset_category_id' => ['required', Rule::exists('asset_categories', 'id')->where('is_active', true)],
-            'name' => ['required', 'string', 'max:150'], 'province' => ['required', 'string', 'max:100'],
-            'city' => ['required', 'string', 'max:100'], 'full_address' => ['required', 'string', 'max:1000'],
-            'area_sqm' => ['required', 'numeric', 'min:0.01'], 'certificate_type' => ['required', 'string', 'max:50'],
+            'name' => ['required', 'string', 'max:150'],
+            'slug' => ['nullable', 'string', 'max:180', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::unique('assets', 'slug')->ignore($asset?->id)],
+            'listing_status' => ['required', Rule::enum(AssetListingStatus::class)],
+            'province' => ['required', 'string', 'max:100'], 'city' => ['required', 'string', 'max:100'],
+            'district' => ['required', 'string', 'max:100'], 'village' => ['required', 'string', 'max:100'],
+            'full_address' => ['required', 'string', 'max:1000'], 'google_maps_url' => ['nullable', 'url', 'max:2000'],
+            'area_sqm' => ['required', 'numeric', 'min:0.01'], 'price' => ['nullable', 'numeric', 'min:0'],
+            'price_per_sqm' => ['nullable', 'numeric', 'min:0'],
+            'certificate_type' => ['required', 'string', 'max:50'],
             'certificate_number' => ['required', 'string', 'max:100'],
-            'certificate_file' => [$asset ? 'nullable' : 'required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:10240'],
-            'condition' => ['required', Rule::enum(AssetCondition::class)], 'condition_notes' => ['nullable', 'string', 'max:2000'],
-            'ownership_status' => ['required', Rule::enum(AssetOwnershipStatus::class)], 'ownership_notes' => ['nullable', 'string', 'max:2000'],
-            'utilization_status' => ['required', Rule::enum(AssetUtilizationStatus::class)], 'utilization_notes' => ['nullable', 'string', 'max:2000'],
+            'description' => ['required', 'string', 'max:10000'],
+            'condition' => ['required', Rule::enum(AssetCondition::class)],
+            'utilization_status' => ['required', Rule::enum(AssetUtilizationStatus::class)],
             'objective' => ['required', Rule::enum(AssetObjective::class)],
+            'facilities' => ['nullable', 'array'],
+            'facilities.*' => ['integer', Rule::exists('facilities', 'id')->where('is_active', true)],
             'photos' => [$asset ? 'nullable' : 'required', 'array', 'min:1', 'max:'.$photoMax],
             'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'photo_alt_texts' => ['nullable', 'array'], 'photo_alt_texts.*' => ['nullable', 'string', 'max:180'],
+            'existing_photo_alt' => ['nullable', 'array'], 'existing_photo_alt.*' => ['nullable', 'string', 'max:180'],
             'delete_photo_ids' => ['nullable', 'array'],
             'delete_photo_ids.*' => ['integer', 'exists:asset_photos,id'],
         ]);
@@ -148,7 +154,11 @@ class OwnerAssetController extends Controller
 
     private function formData(): array
     {
-        return ['categories' => AssetCategory::where('is_active', true)->orderBy('name')->get(), 'conditions' => AssetCondition::options(),
-            'ownerships' => AssetOwnershipStatus::options(), 'utilizations' => AssetUtilizationStatus::options(), 'objectives' => AssetObjective::options()];
+        return [
+            'categories' => AssetCategory::where('is_active', true)->orderBy('name')->get(),
+            'facilities' => Facility::where('is_active', true)->orderBy('sort_order')->orderBy('name')->get(),
+            'conditions' => AssetCondition::options(), 'listingStatuses' => AssetListingStatus::options(),
+            'utilizations' => AssetUtilizationStatus::options(), 'objectives' => AssetObjective::options(),
+        ];
     }
 }
