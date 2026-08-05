@@ -20,7 +20,7 @@ class Asset extends Model
     protected $fillable = [
         'owner_id', 'asset_category_id', 'name', 'slug', 'listing_status', 'province', 'city', 'district',
         'village', 'full_address', 'google_maps_url', 'description', 'area_sqm', 'price', 'price_per_sqm',
-        'certificate_type', 'certificate_number', 'condition', 'condition_notes',
+        'certificate_type', 'condition', 'condition_notes',
         'ownership_status', 'ownership_notes', 'utilization_status', 'utilization_notes', 'objective',
         'seo_title', 'meta_description', 'slug_locked_at', 'status', 'latest_review_notes', 'reviewed_by',
         'reviewed_at', 'submitted_at', 'published_at',

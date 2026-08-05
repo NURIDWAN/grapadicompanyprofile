@@ -56,6 +56,7 @@ class AssetMatchingTest extends TestCase
 
         $this->actingAs($owner)->get(route('matching.assets.create'))->assertOk()
             ->assertSee('Informasi Aset')->assertSee('SEO Otomatis')
+            ->assertDontSee('name="certificate_number"', false)
             ->assertDontSee('name="certificate_file"', false);
 
         $response = $this->actingAs($owner)->post(route('matching.assets.store'), [
@@ -65,7 +66,7 @@ class AssetMatchingTest extends TestCase
             'full_address' => 'Alamat publik', 'google_maps_url' => 'https://maps.google.com/?q=-6.2,107.1',
             'description' => 'Gudang siap digunakan.', 'area_sqm' => 500, 'price' => 2500000000,
             'price_per_sqm' => 4750000,
-            'certificate_type' => 'HGB', 'certificate_number' => 'HGB-001',
+            'certificate_type' => 'HGB',
             'condition' => AssetCondition::Good->value, 'ownership_status' => AssetOwnershipStatus::Company->value,
             'utilization_status' => AssetUtilizationStatus::Vacant->value, 'objective' => AssetObjective::FindInvestor->value,
             'photos' => [UploadedFile::fake()->image('depan.jpg')],
@@ -75,14 +76,16 @@ class AssetMatchingTest extends TestCase
         $asset = Asset::where('name', 'Gudang Baru')->firstOrFail();
         $response->assertRedirect(route('matching.assets.edit', $asset));
         $this->assertSame(AssetStatus::Draft, $asset->status);
+        $this->assertFalse(Schema::hasColumn('assets', 'certificate_number'));
         $this->assertFalse(Schema::hasColumn('assets', 'certificate_file'));
+        $this->assertArrayNotHasKey('certificate_number', $asset->getAttributes());
         $this->assertArrayNotHasKey('certificate_file', $asset->getAttributes());
         Storage::disk('public')->assertExists($asset->photos()->first()->path);
         $this->assertSame('Tampak depan Gudang Baru', $asset->photos()->first()->alt_text);
         $this->assertSame('4750000.00', $asset->price_per_sqm);
     }
 
-    public function test_catalog_only_shows_publicly_listed_assets_and_keeps_certificate_private(): void
+    public function test_catalog_only_shows_publicly_listed_assets(): void
     {
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $published = $this->makeAsset($owner, AssetStatus::Published, ['name' => 'Gudang Terbit']);
@@ -91,7 +94,9 @@ class AssetMatchingTest extends TestCase
         $this->get(route('matching.index'))->assertOk()->assertSee('Gudang Terbit')->assertDontSee('Gudang Rahasia');
         $this->get(route('matching.show', $published))->assertOk()
             ->assertSee('Gudang Terbit')->assertSee($published->certificate_type)
-            ->assertDontSee($published->certificate_number)->assertSee($published->full_address);
+            ->assertSee('Kondisi Aset')->assertSee('Deskripsi')->assertSee('Pemanfaatan')
+            ->assertDontSee('Nomor Sertifikat')->assertDontSee('Dokumen Sertifikat')
+            ->assertSee($published->full_address);
         $this->get(route('matching.show', $pending))->assertNotFound();
     }
 
@@ -152,7 +157,7 @@ class AssetMatchingTest extends TestCase
             'province' => $asset->province, 'city' => $asset->city, 'district' => $asset->district,
             'village' => $asset->village, 'full_address' => $asset->full_address, 'description' => $asset->description,
             'area_sqm' => 1200, 'certificate_type' => $asset->certificate_type,
-            'certificate_number' => $asset->certificate_number, 'condition' => AssetCondition::Good->value,
+            'condition' => AssetCondition::Good->value,
             'ownership_status' => AssetOwnershipStatus::Personal->value,
             'utilization_status' => AssetUtilizationStatus::Vacant->value, 'objective' => AssetObjective::Sell->value,
         ])->assertSessionHasNoErrors();
@@ -174,7 +179,9 @@ class AssetMatchingTest extends TestCase
 
         $this->actingAs($admin)->get(route('filament.admin.resources.assets.index'))->assertOk();
         $this->actingAs($admin)->get(route('filament.admin.resources.assets.view', $asset))
-            ->assertOk()->assertDontSee('Dokumen Sertifikat');
+            ->assertOk()->assertSee('Informasi Aset')->assertSee('Lokasi')->assertSee('Legalitas')
+            ->assertSee('Detail Aset')->assertSee('Fasilitas')->assertSee('SEO Otomatis')
+            ->assertDontSee('Nomor Sertifikat')->assertDontSee('Dokumen Sertifikat');
         $this->actingAs($admin)->get(route('filament.admin.resources.asset-categories.index'))->assertOk();
         $this->actingAs($admin)->get(route('filament.admin.resources.facilities.index'))->assertOk();
         $this->assertFalse(app('router')->has('matching.assets.certificate'));
@@ -235,7 +242,7 @@ class AssetMatchingTest extends TestCase
             'listing_status' => AssetListingStatus::Available, 'province' => 'DKI Jakarta', 'city' => 'Jakarta Selatan',
             'district' => 'Kebayoran Baru', 'village' => 'Senayan', 'full_address' => 'Jl. Publik No. 1',
             'google_maps_url' => 'https://maps.google.com/?q=-6.2,106.8', 'description' => 'Deskripsi lengkap aset uji.',
-            'area_sqm' => 1000, 'price' => 5000000000, 'certificate_type' => 'SHM', 'certificate_number' => 'SHM-SECRET-123',
+            'area_sqm' => 1000, 'price' => 5000000000, 'certificate_type' => 'SHM',
             'condition' => AssetCondition::Good,
             'ownership_status' => AssetOwnershipStatus::Personal, 'utilization_status' => AssetUtilizationStatus::Vacant,
             'objective' => AssetObjective::Sell, 'status' => $status, 'published_at' => $status === AssetStatus::Published ? now() : null,

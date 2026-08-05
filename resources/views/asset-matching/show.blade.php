@@ -203,7 +203,7 @@
                 </section>
                 <section class="rounded-md border border-[#234634] bg-[#071f17] p-5">
                     <div class="flex items-center gap-3"><span class="material-icons-outlined text-xl text-primary">apartment</span><h2 class="font-display text-xl font-semibold text-white">Pemanfaatan</h2></div>
-                    <p class="mt-3 text-xs leading-6 text-gray-400">{{ $asset->utilization_notes ?: 'Aset saat ini berstatus '.$asset->utilization_status->label().'. Informasi lebih lanjut tersedia melalui proses matching.' }}</p>
+                    <p class="mt-3 text-xs leading-6 text-gray-400">Aset saat ini berstatus {{ $asset->utilization_status->label() }} dengan tujuan {{ strtolower($asset->objective->label()) }}.</p>
                 </section>
             </div>
 

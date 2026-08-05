@@ -37,38 +37,56 @@ class AssetResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\Section::make('Pemilik dan Aset')->schema([
+            Forms\Components\Section::make('Pemilik')->schema([
                 Forms\Components\TextInput::make('owner.name')->label('Pemilik')->disabled(),
                 Forms\Components\TextInput::make('owner.whatsapp')->label('WhatsApp')->disabled(),
+            ])->columns(2),
+            Forms\Components\Section::make('Informasi Aset')->schema([
                 Forms\Components\TextInput::make('name')->label('Nama Aset')->disabled(),
                 Forms\Components\TextInput::make('slug')->label('Slug')->disabled(),
                 Forms\Components\TextInput::make('category.name')->label('Kategori')->disabled(),
                 Forms\Components\TextInput::make('listing_status')->label('Status Listing')->formatStateUsing(fn ($state) => $state instanceof AssetListingStatus ? $state->label() : (AssetListingStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-                Forms\Components\TextInput::make('province')->disabled(), Forms\Components\TextInput::make('city')->label('Kabupaten/Kota')->disabled(),
-                Forms\Components\TextInput::make('district')->label('Kecamatan')->disabled(), Forms\Components\TextInput::make('village')->label('Kelurahan/Desa')->disabled(),
-                Forms\Components\Textarea::make('full_address')->label('Alamat Lengkap')->disabled()->columnSpanFull(),
-                Forms\Components\TextInput::make('google_maps_url')->label('Google Maps')->disabled()->columnSpanFull(),
                 Forms\Components\TextInput::make('area_sqm')->label('Luas (m²)')->disabled(),
                 Forms\Components\TextInput::make('price')->label('Harga')->formatStateUsing(fn ($state) => $state ? 'Rp '.number_format((float) $state, 0, ',', '.') : 'Hubungi Grapadi')->disabled(),
                 Forms\Components\TextInput::make('price_per_sqm')->label('Harga/m²')->formatStateUsing(fn ($state) => $state ? 'Rp '.number_format((float) $state, 0, ',', '.') : 'Hubungi Grapadi')->disabled(),
+            ])->columns(2),
+            Forms\Components\Section::make('Lokasi')->schema([
+                Forms\Components\TextInput::make('province')->label('Provinsi')->disabled(),
+                Forms\Components\TextInput::make('city')->label('Kabupaten/Kota')->disabled(),
+                Forms\Components\TextInput::make('district')->label('Kecamatan')->disabled(),
+                Forms\Components\TextInput::make('village')->label('Kelurahan/Desa')->disabled(),
+                Forms\Components\Textarea::make('full_address')->label('Alamat Lengkap')->disabled()->columnSpanFull(),
+                Forms\Components\TextInput::make('google_maps_url')->label('Google Maps')->disabled()->columnSpanFull(),
+            ])->columns(2),
+            Forms\Components\Section::make('Legalitas')->schema([
+                Forms\Components\TextInput::make('certificate_type')->label('Sertifikat')->disabled(),
+            ]),
+            Forms\Components\Section::make('Detail Aset')->schema([
                 Forms\Components\Textarea::make('description')->label('Deskripsi')->disabled()->columnSpanFull(),
-                Forms\Components\TextInput::make('certificate_type')->label('Jenis Sertifikat')->disabled(),
-                Forms\Components\TextInput::make('certificate_number')->label('Nomor Sertifikat')->disabled(),
+                Forms\Components\TextInput::make('condition')->label('Kondisi')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetCondition ? $state->label() : (\App\Enums\AssetCondition::tryFrom((string) $state)?->label() ?? $state))->disabled(),
+                Forms\Components\TextInput::make('utilization_status')->label('Pemanfaatan')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetUtilizationStatus ? $state->label() : (\App\Enums\AssetUtilizationStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
+                Forms\Components\TextInput::make('objective')->label('Tujuan')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetObjective ? $state->label() : (\App\Enums\AssetObjective::tryFrom((string) $state)?->label() ?? $state))->disabled(),
+                Forms\Components\TextInput::make('status')->label('Status Review')->formatStateUsing(fn ($state) => $state instanceof AssetStatus ? $state->label() : (AssetStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
             ])->columns(2),
-            Forms\Components\Section::make('Status Aset')->schema([
-                Forms\Components\TextInput::make('condition')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetCondition ? $state->label() : (\App\Enums\AssetCondition::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-                Forms\Components\Textarea::make('condition_notes')->disabled(),
-                Forms\Components\TextInput::make('utilization_status')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetUtilizationStatus ? $state->label() : (\App\Enums\AssetUtilizationStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-                Forms\Components\Textarea::make('utilization_notes')->disabled(),
-                Forms\Components\TextInput::make('objective')->formatStateUsing(fn ($state) => $state instanceof \App\Enums\AssetObjective ? $state->label() : (\App\Enums\AssetObjective::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-                Forms\Components\TextInput::make('status')->formatStateUsing(fn ($state) => $state instanceof AssetStatus ? $state->label() : (AssetStatus::tryFrom((string) $state)?->label() ?? $state))->disabled(),
-            ])->columns(2),
+            Forms\Components\Section::make('Fasilitas')->schema([
+                Forms\Components\Placeholder::make('facilities_list')->hiddenLabel()->content(function (Asset $record) {
+                    if ($record->facilities->isEmpty()) {
+                        return 'Tidak ada fasilitas yang dipilih.';
+                    }
+
+                    return new HtmlString($record->facilities->map(fn ($facility) => '<span style="display:inline-flex;align-items:center;margin:0 8px 8px 0;padding:6px 10px;border:1px solid #d5b24b;border-radius:8px">'.e($facility->name).'</span>')->implode(''));
+                }),
+            ]),
             Forms\Components\Section::make('Foto Aset')->schema([
                 Forms\Components\Placeholder::make('photo_gallery')->hiddenLabel()->content(function (Asset $record) {
                     $images = $record->photos->map(fn ($photo) => '<figure><img src="'.e(asset('storage/'.$photo->path)).'" alt="'.e($photo->alt_text ?: $record->name).'" style="width:180px;height:120px;object-fit:cover;border-radius:8px"><figcaption style="max-width:180px;font-size:11px">'.e($photo->alt_text ?: $record->name).'</figcaption></figure>')->implode('');
 
                     return new HtmlString('<div style="display:flex;flex-wrap:wrap;gap:12px">'.$images.'</div>');
                 }),
+            ]),
+            Forms\Components\Section::make('SEO Otomatis')->schema([
+                Forms\Components\TextInput::make('seo_title')->label('SEO Title')->disabled()->columnSpanFull(),
+                Forms\Components\Textarea::make('meta_description')->label('Meta Description')->disabled()->columnSpanFull(),
             ]),
             Forms\Components\Section::make('Riwayat Review')->schema([
                 Forms\Components\Placeholder::make('review_history')->hiddenLabel()->content(function (Asset $record) {

@@ -130,7 +130,6 @@ class OwnerAssetController extends Controller
             'area_sqm' => ['required', 'numeric', 'min:0.01'], 'price' => ['nullable', 'numeric', 'min:0'],
             'price_per_sqm' => ['nullable', 'numeric', 'min:0'],
             'certificate_type' => ['required', 'string', 'max:50'],
-            'certificate_number' => ['required', 'string', 'max:100'],
             'description' => ['required', 'string', 'max:10000'],
             'condition' => ['required', Rule::enum(AssetCondition::class)],
             'utilization_status' => ['required', Rule::enum(AssetUtilizationStatus::class)],
