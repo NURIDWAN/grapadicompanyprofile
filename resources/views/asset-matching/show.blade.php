@@ -13,7 +13,15 @@
 
 @php($photoCount = $asset->photos->count())
 
+@push('styles')
+<style>
+    /* Prevent the browser from hijacking pinch/pan gestures inside the lightbox. */
+    .asset-lightbox-stage { touch-action: none; }
+</style>
+@endpush
+
 @section('content')
+@include('asset-matching.partials.gallery-script')
 <div class="min-h-screen bg-[#03150e] pt-20">
     {{-- Compact breadcrumb bar --}}
     <div class="border-b border-[#1e402f] bg-[#061d15] px-4 sm:px-6 lg:px-8">
@@ -40,19 +48,10 @@
                 <section class="flex min-w-0 flex-col overflow-hidden rounded-md border border-[#234634] bg-[#071f17]">
                     @if($asset->photos->isNotEmpty())
                         <div
-                            x-data="{
-                                active: 0,
-                                total: {{ $photoCount }},
-                                touchStart: 0,
-                                next() { this.active = (this.active + 1) % this.total },
-                                previous() { this.active = (this.active - 1 + this.total) % this.total },
-                                finishSwipe(event) {
-                                    const distance = event.changedTouches[0].clientX - this.touchStart;
-                                    if (Math.abs(distance) > 45) distance < 0 ? this.next() : this.previous();
-                                }
-                            }"
+                            x-data="assetGallery({{ $photoCount }})"
                             @keydown.right.prevent="next()"
                             @keydown.left.prevent="previous()"
+                            @keydown.escape="closeLightbox()"
                             @touchstart.passive="touchStart = $event.touches[0].clientX"
                             @touchend.passive="finishSwipe($event)"
                             tabindex="0"
@@ -75,14 +74,24 @@
                                         <img
                                             src="{{ asset('storage/'.$photo->path) }}"
                                             alt="{{ $photo->alt_text ?: 'Foto '.$asset->name.' '.$loop->iteration }}"
-                                            class="h-full w-full object-cover object-center"
+                                            class="h-full w-full cursor-zoom-in object-cover object-center"
+                                            @click="openLightbox({{ $loop->index }})"
                                         >
-                                        <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"></div>
+                                        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"></div>
                                     </div>
                                 @endforeach
 
                                 <span class="absolute left-4 top-4 z-10 rounded-sm bg-[#e9d38a] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#092016]">{{ $asset->category->name }}</span>
                                 <span class="absolute right-4 top-4 z-10 rounded-full bg-black/65 px-3 py-1.5 text-[10px] font-semibold text-white"><span x-text="active + 1"></span>/{{ $photoCount }}</span>
+
+                                <button
+                                    type="button"
+                                    @click="openLightbox()"
+                                    class="absolute bottom-4 left-4 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/65 px-3 py-2 text-[10px] font-semibold text-white backdrop-blur transition hover:border-primary hover:bg-primary hover:text-background-dark"
+                                    aria-label="Perbesar foto"
+                                >
+                                    <span class="material-icons-outlined text-sm">zoom_in</span> Perbesar
+                                </button>
 
                                 @if($photoCount > 1)
                                     <button type="button" @click="previous()" class="absolute left-3 top-1/2 z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur transition hover:border-primary hover:bg-primary hover:text-background-dark" aria-label="Foto sebelumnya">
@@ -99,7 +108,7 @@
                                     @foreach($asset->photos as $photo)
                                         <button
                                             type="button"
-                                            @click="active = {{ $loop->index }}"
+                                            @click="show({{ $loop->index }})"
                                             :class="active === {{ $loop->index }} ? 'border-primary opacity-100' : 'border-transparent opacity-55 hover:opacity-90'"
                                             class="relative h-14 w-20 shrink-0 overflow-hidden rounded border-2 transition"
                                             aria-label="Tampilkan foto {{ $loop->iteration }}"
@@ -109,6 +118,112 @@
                                     @endforeach
                                 </div>
                             @endif
+
+                            {{-- Fullscreen zoomable lightbox --}}
+                            <template x-teleport="body">
+                                <div
+                                    x-show="open"
+                                    x-cloak
+                                    x-transition:enter="transition ease-out duration-200"
+                                    x-transition:enter-start="opacity-0"
+                                    x-transition:enter-end="opacity-100"
+                                    x-transition:leave="transition ease-in duration-150"
+                                    x-transition:leave-start="opacity-100"
+                                    x-transition:leave-end="opacity-0"
+                                    @keydown.window.escape="closeLightbox()"
+                                    @keydown.window.right.prevent="open && next()"
+                                    @keydown.window.left.prevent="open && previous()"
+                                    class="fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-sm"
+                                    role="dialog"
+                                    aria-modal="true"
+                                    aria-label="Pratinjau foto aset"
+                                >
+                                    {{-- Toolbar --}}
+                                    <div class="relative z-20 flex shrink-0 items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
+                                        <p class="min-w-0 truncate text-xs text-gray-300">
+                                            <span class="font-semibold text-white">{{ $asset->name }}</span>
+                                            <span class="ml-2 text-gray-500"><span x-text="active + 1"></span>/{{ $photoCount }}</span>
+                                        </p>
+
+                                        <div class="flex shrink-0 items-center gap-1.5">
+                                            <span class="mr-1 hidden text-[10px] tabular-nums text-gray-400 sm:block" x-text="Math.round(scale * 100) + '%'"></span>
+
+                                            <button type="button" @click="zoomOut()" :disabled="scale <= minScale" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35" aria-label="Perkecil">
+                                                <span class="material-icons-outlined text-lg">remove</span>
+                                            </button>
+                                            <button type="button" @click="zoomIn()" :disabled="scale >= maxScale" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-35" aria-label="Perbesar">
+                                                <span class="material-icons-outlined text-lg">add</span>
+                                            </button>
+                                            <button type="button" @click="resetZoom()" x-show="zoomed" class="inline-flex h-9 items-center justify-center gap-1 rounded-full border border-white/20 px-3 text-[10px] font-semibold text-white transition hover:border-primary hover:text-primary" aria-label="Reset zoom">
+                                                <span class="material-icons-outlined text-sm">restart_alt</span> Reset
+                                            </button>
+                                            <button type="button" @click="closeLightbox()" class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 text-white transition hover:border-red-400 hover:text-red-400" aria-label="Tutup pratinjau">
+                                                <span class="material-icons-outlined text-lg">close</span>
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    {{-- Zoom stage --}}
+                                    <div
+                                        x-ref="stage"
+                                        class="asset-lightbox-stage relative flex-1 overflow-hidden"
+                                        @wheel.prevent="onWheel($event)"
+                                        @dblclick.prevent="toggleZoom($event)"
+                                        @mousedown.prevent="startDrag($event)"
+                                        @mousemove="onDrag($event)"
+                                        @mouseup="endDrag()"
+                                        @mouseleave="endDrag()"
+                                        @touchstart="onTouchStart($event)"
+                                        @touchmove.prevent="onTouchMove($event)"
+                                        @touchend="onTouchEnd($event)"
+                                        @click.self="closeLightbox()"
+                                        :class="zoomed ? (dragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-zoom-in'"
+                                    >
+                                        @foreach($asset->photos as $photo)
+                                            <img
+                                                x-show="active === {{ $loop->index }}"
+                                                {{ $loop->first ? '' : 'x-cloak' }}
+                                                data-index="{{ $loop->index }}"
+                                                src="{{ asset('storage/'.$photo->path) }}"
+                                                alt="{{ $photo->alt_text ?: 'Foto '.$asset->name.' '.$loop->iteration }}"
+                                                class="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
+                                                :style="`transform: translate(${tx}px, ${ty}px) scale(${scale}); transition: ${dragging || pinchStart ? 'none' : 'transform 150ms ease-out'}`"
+                                                draggable="false"
+                                            >
+                                        @endforeach
+
+                                        @if($photoCount > 1)
+                                            <button type="button" x-show="!zoomed" @click.stop="previous()" class="absolute left-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur transition hover:border-primary hover:bg-primary hover:text-background-dark" aria-label="Foto sebelumnya">
+                                                <span class="material-icons-outlined">chevron_left</span>
+                                            </button>
+                                            <button type="button" x-show="!zoomed" @click.stop="next()" class="absolute right-3 top-1/2 z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-white/20 bg-black/60 text-white backdrop-blur transition hover:border-primary hover:bg-primary hover:text-background-dark" aria-label="Foto berikutnya">
+                                                <span class="material-icons-outlined">chevron_right</span>
+                                            </button>
+                                        @endif
+
+                                        <p x-show="!zoomed" class="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/60 px-3 py-1.5 text-center text-[10px] text-gray-300 backdrop-blur">
+                                            Scroll atau klik dua kali untuk zoom &middot; seret untuk menggeser
+                                        </p>
+                                    </div>
+
+                                    {{-- Lightbox thumbnails --}}
+                                    @if($photoCount > 1)
+                                        <div class="flex shrink-0 justify-center gap-2 overflow-x-auto border-t border-white/10 px-3 py-2">
+                                            @foreach($asset->photos as $photo)
+                                                <button
+                                                    type="button"
+                                                    @click="show({{ $loop->index }})"
+                                                    :class="active === {{ $loop->index }} ? 'border-primary opacity-100' : 'border-transparent opacity-50 hover:opacity-90'"
+                                                    class="relative h-12 w-16 shrink-0 overflow-hidden rounded border-2 transition"
+                                                    aria-label="Tampilkan foto {{ $loop->iteration }}"
+                                                >
+                                                    <img src="{{ asset('storage/'.$photo->path) }}" alt="Thumbnail: {{ $photo->alt_text ?: $asset->name }}" class="h-full w-full object-cover">
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            </template>
                         </div>
                     @else
                         <div class="flex min-h-[520px] items-center justify-center bg-[linear-gradient(135deg,#103829,#071c14)] text-gray-600">

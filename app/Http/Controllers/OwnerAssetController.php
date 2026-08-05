@@ -117,6 +117,18 @@ class OwnerAssetController extends Controller
 
     private function validated(Request $request, ?Asset $asset = null): array
     {
+        $rawPhotos = (array) $request->file('photos', []);
+        $uploadedPhotos = array_filter($rawPhotos, fn ($file) => $file && $file->isValid());
+        if (empty($uploadedPhotos)) {
+            $request->offsetUnset('photos');
+        } else {
+            $request->merge(['photos' => array_values($uploadedPhotos)]);
+        }
+
+        if ($request->filled('slug')) {
+            $request->merge(['slug' => \Illuminate\Support\Str::slug($request->input('slug'))]);
+        }
+
         $validDeleteCount = $asset ? $asset->photos()->whereIn('id', (array) $request->input('delete_photo_ids', []))->count() : 0;
         $photoMax = max(0, 10 - ($asset?->photos()->count() ?? 0) + $validDeleteCount);
         $data = $request->validate([
@@ -136,7 +148,7 @@ class OwnerAssetController extends Controller
             'objective' => ['required', Rule::enum(AssetObjective::class)],
             'facilities' => ['nullable', 'array'],
             'facilities.*' => ['integer', Rule::exists('facilities', 'id')->where('is_active', true)],
-            'photos' => [$asset ? 'nullable' : 'required', 'array', 'min:1', 'max:'.$photoMax],
+            'photos' => [$asset ? 'nullable' : 'required', 'array', $asset ? 'nullable' : 'min:1', 'max:'.$photoMax],
             'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'photo_alt_texts' => ['nullable', 'array'], 'photo_alt_texts.*' => ['nullable', 'string', 'max:180'],
             'existing_photo_alt' => ['nullable', 'array'], 'existing_photo_alt.*' => ['nullable', 'string', 'max:180'],

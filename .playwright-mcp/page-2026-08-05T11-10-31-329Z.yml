@@ -1,0 +1,211 @@
+- generic [active] [ref=f4e1]:
+  - navigation "Main navigation" [ref=f4e2]:
+    - generic [ref=f4e4]:
+      - link "Laravel Logo Laravel" [ref=f4e6] [cursor=pointer]:
+        - /url: http://127.0.0.1:32772
+        - img "Laravel Logo" [ref=f4e7]
+        - generic [ref=f4e8]: Laravel
+      - generic [ref=f4e9]:
+        - link "Home" [ref=f4e10] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772
+        - button "About expand_more" [ref=f4e12]:
+          - text: About
+          - generic [ref=f4e13]: expand_more
+        - link "Services" [ref=f4e14] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772/services
+        - link "Portfolio" [ref=f4e15] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772/portfolio
+        - link "Capital Connect" [ref=f4e16] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772/asset-matching
+        - link "Blog" [ref=f4e18] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772/blog
+        - link "Strategix" [ref=f4e19] [cursor=pointer]:
+          - /url: https://strategix.grapadikonsultan.co.id
+      - link "Konsultasi" [ref=f4e21] [cursor=pointer]:
+        - /url: http://127.0.0.1:32772/contact
+  - main [ref=f4e22]:
+    - generic [ref=f4e23]:
+      - generic [ref=f4e25]:
+        - navigation "Breadcrumb" [ref=f4e26]:
+          - link "Capital Connect" [ref=f4e27] [cursor=pointer]:
+            - /url: http://127.0.0.1:32772/asset-matching
+          - generic [ref=f4e28]: /
+          - generic [ref=f4e29]: Hunian
+          - generic [ref=f4e30]: /
+          - generic [ref=f4e31]: Villa Indah Lestari
+        - link "arrow_back Katalog" [ref=f4e32] [cursor=pointer]:
+          - /url: http://127.0.0.1:32772/asset-matching
+          - generic [ref=f4e33]: arrow_back
+          - text: Katalog
+      - main [ref=f4e34]:
+        - generic [ref=f4e35]:
+          - generic [ref=f4e36]:
+            - generic [ref=f4e37]:
+              - generic "Galeri foto aset" [ref=f4e38]:
+                - generic [ref=f4e39]:
+                  - img "Foto Villa Indah Lestari 1" [ref=f4e41]
+                  - generic [ref=f4e42]: Hunian
+                  - generic [ref=f4e43]: 1/3
+                  - button "Perbesar foto" [ref=f4e44]:
+                    - generic [ref=f4e45]: zoom_in
+                    - text: Perbesar
+                  - button "Foto sebelumnya" [ref=f4e46]:
+                    - generic [ref=f4e47]: chevron_left
+                  - button "Foto berikutnya" [ref=f4e48]:
+                    - generic [ref=f4e49]: chevron_right
+                - generic [ref=f4e50]:
+                  - button "Tampilkan foto 1" [ref=f4e51]:
+                    - 'img "Thumbnail: Villa Indah Lestari" [ref=f4e52]'
+                  - button "Tampilkan foto 2" [ref=f4e53]:
+                    - 'img "Thumbnail: Uji zoom 2" [ref=f4e54]'
+                  - button "Tampilkan foto 3" [ref=f4e55]:
+                    - 'img "Thumbnail: Uji zoom 3" [ref=f4e56]'
+              - generic [ref=f4e57]:
+                - paragraph [ref=f4e58]:
+                  - generic [ref=f4e59]: photo_library
+                  - text: 3 foto aset
+                - paragraph [ref=f4e60]: Dipublikasikan 04 Aug 2026
+            - complementary [ref=f4e61]:
+              - generic [ref=f4e62]:
+                - generic [ref=f4e63]:
+                  - generic [ref=f4e64]: Hunian
+                  - generic [ref=f4e65]: Dijual
+                  - generic [ref=f4e66]: Tersedia
+                - heading "Villa Indah Lestari" [level=1] [ref=f4e67]
+                - paragraph [ref=f4e68]:
+                  - generic [ref=f4e69]: location_on
+                  - text: KAB.BANDUNG, JAWA BARAT
+                - paragraph [ref=f4e70]: Hubungi Grapadi
+              - generic [ref=f4e71]:
+                - generic [ref=f4e72]:
+                  - generic [ref=f4e73]: straighten
+                  - term [ref=f4e74]: Luas Aset
+                  - definition [ref=f4e75]: 20 m²
+                - generic [ref=f4e76]:
+                  - generic [ref=f4e77]: description
+                  - term [ref=f4e78]: Sertifikat
+                  - definition [ref=f4e79]: SHM
+                - generic [ref=f4e80]:
+                  - generic [ref=f4e81]: verified
+                  - term [ref=f4e82]: Kondisi
+                  - definition [ref=f4e83]: Sangat Baik
+                - generic [ref=f4e84]:
+                  - generic [ref=f4e85]: sell
+                  - term [ref=f4e86]: Harga/m²
+                  - definition [ref=f4e87]: Hubungi Grapadi
+                - generic [ref=f4e88]:
+                  - generic [ref=f4e89]: business_center
+                  - term [ref=f4e90]: Pemanfaatan
+                  - definition [ref=f4e91]: Disewakan
+                - generic [ref=f4e92]:
+                  - generic [ref=f4e93]: flag
+                  - term [ref=f4e94]: Tujuan
+                  - definition [ref=f4e95]: Dijual
+              - generic [ref=f4e97]:
+                - generic [ref=f4e98]: location_on
+                - paragraph [ref=f4e100]: Jl.CIWIDEY - PATENGGANG KP.SINAPEUL RT/RW/.05/11 DESA.ALAMENDAH KECAMATAN.RANCABALI
+              - generic [ref=f4e101]:
+                - link "login Masuk untuk Tambah Minat" [ref=f4e102] [cursor=pointer]:
+                  - /url: http://127.0.0.1:32772/asset-matching/login?redirect=http%3A%2F%2F127.0.0.1%3A32772%2Fasset-matching%2Faset%2Fvilla-indah-lestari
+                  - generic [ref=f4e103]: login
+                  - text: Masuk untuk Tambah Minat
+                - paragraph [ref=f4e104]: Minat akan diteruskan kepada tim Grapadi, bukan langsung kepada pemilik.
+          - generic [ref=f4e105]:
+            - generic [ref=f4e106]:
+              - generic [ref=f4e107]:
+                - generic [ref=f4e108]: fact_check
+                - heading "Kondisi Aset" [level=2] [ref=f4e109]
+              - paragraph [ref=f4e110]: Aset tercatat dalam kondisi Sangat Baik.
+            - generic [ref=f4e111]:
+              - generic [ref=f4e112]:
+                - generic [ref=f4e113]: description
+                - heading "Deskripsi" [level=2] [ref=f4e114]
+              - paragraph
+            - generic [ref=f4e115]:
+              - generic [ref=f4e116]:
+                - generic [ref=f4e117]: apartment
+                - heading "Pemanfaatan" [level=2] [ref=f4e118]
+              - paragraph [ref=f4e119]: Aset saat ini berstatus Disewakan dengan tujuan dijual.
+          - generic [ref=f4e120]:
+            - generic [ref=f4e121]:
+              - text: "01"
+              - heading "Data Terinventarisasi" [level=2] [ref=f4e122]
+              - paragraph [ref=f4e123]: Informasi dasar aset tercatat di sistem Grapadi.
+            - generic [ref=f4e124]:
+              - text: "02"
+              - heading "Screening Internal" [level=2] [ref=f4e125]
+              - paragraph [ref=f4e126]: Kelengkapan, legalitas dasar, dan foto diperiksa.
+            - generic [ref=f4e127]:
+              - text: "03"
+              - heading "Aset Dipublikasikan" [level=2] [ref=f4e128]
+              - paragraph [ref=f4e129]: Data sensitif tetap terlindungi.
+            - generic [ref=f4e130]:
+              - text: "04"
+              - heading "Minat Ditindaklanjuti" [level=2] [ref=f4e131]
+              - paragraph [ref=f4e132]: Tim Grapadi menghubungkan pihak yang relevan.
+          - generic [ref=f4e133]:
+            - generic [ref=f4e134]:
+              - paragraph [ref=f4e135]: Perlu informasi lebih lanjut?
+              - heading "Diskusikan peluang aset bersama Grapadi." [level=2] [ref=f4e136]
+            - link "chat Hubungi Grapadi" [ref=f4e137] [cursor=pointer]:
+              - /url: http://127.0.0.1:32772/contact
+              - generic [ref=f4e138]: chat
+              - text: Hubungi Grapadi
+          - paragraph [ref=f4e139]: Screening dasar bukan valuasi, appraisal, studi kelayakan, financial model, atau rekomendasi investasi.
+  - contentinfo [ref=f4e140]:
+    - generic [ref=f4e141]:
+      - generic [ref=f4e142]:
+        - generic [ref=f4e143]:
+          - generic [ref=f4e144]: Laravel
+          - paragraph [ref=f4e146]: Business Advisory dan Riset Strategis yang mendampingi pengambilan keputusan bisnis dan investasi.
+        - generic [ref=f4e147]:
+          - heading "Menu" [level=4] [ref=f4e148]
+          - list [ref=f4e149]:
+            - listitem [ref=f4e150]:
+              - link "Beranda" [ref=f4e151] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772
+            - listitem [ref=f4e152]:
+              - link "Layanan" [ref=f4e153] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/layanan
+            - listitem [ref=f4e154]:
+              - link "Tentang Kami" [ref=f4e155] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/tentang-kami
+            - listitem [ref=f4e156]:
+              - link "Insights" [ref=f4e157] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/blog
+        - generic [ref=f4e158]:
+          - heading "Layanan" [level=4] [ref=f4e159]
+          - list [ref=f4e160]:
+            - listitem [ref=f4e161]:
+              - link "Market Research" [ref=f4e162] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/layanan
+            - listitem [ref=f4e163]:
+              - link "Feasibility Study" [ref=f4e164] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/layanan
+            - listitem [ref=f4e165]:
+              - link "Strategic Advisory" [ref=f4e166] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/layanan
+            - listitem [ref=f4e167]:
+              - link "Business Intelligence" [ref=f4e168] [cursor=pointer]:
+                - /url: http://127.0.0.1:32772/layanan
+        - generic [ref=f4e169]:
+          - heading "Kontak" [level=4] [ref=f4e170]
+          - list [ref=f4e171]:
+            - listitem [ref=f4e172]:
+              - generic [ref=f4e173]: location_on
+              - generic [ref=f4e174]: Jakarta, Indonesia
+            - listitem [ref=f4e175]:
+              - generic [ref=f4e176]: phone
+              - link "+62 21 1234 5678" [ref=f4e177] [cursor=pointer]:
+                - /url: tel:+622112345678
+            - listitem [ref=f4e178]:
+              - generic [ref=f4e179]: mail
+              - link "info@grapadi.com" [ref=f4e180] [cursor=pointer]:
+                - /url: mailto:info@grapadi.com
+      - generic [ref=f4e181]:
+        - link "LinkedIn" [ref=f4e182] [cursor=pointer]:
+          - /url: https://www.linkedin.com/company/grapadi
+        - link "Instagram" [ref=f4e185] [cursor=pointer]:
+          - /url: https://www.instagram.com/grapadi
+      - paragraph [ref=f4e189]: © 2026 Laravel. All rights reserved.
+  - button "Chat WA" [ref=f4e190] [cursor=pointer]

@@ -171,13 +171,18 @@ class AssetMatchingTest extends TestCase
 
     public function test_admin_can_open_asset_matching_resources_without_certificate_document(): void
     {
-        $adminRole = Role::create(['name' => 'admin', 'guard_name' => 'web']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view_any_asset::category', 'guard_name' => 'web']);
+        \Spatie\Permission\Models\Permission::firstOrCreate(['name' => 'view_any_facility', 'guard_name' => 'web']);
+        $adminRole = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
+        $adminRole->givePermissionTo(['view_any_asset::category', 'view_any_facility']);
         $admin = User::factory()->create(['is_active' => true]);
         $admin->assignRole($adminRole);
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
         $asset = $this->makeAsset($owner, AssetStatus::PendingReview);
 
         $this->actingAs($admin)->get(route('filament.admin.resources.assets.index'))->assertOk();
+        $this->actingAs($admin)->get(route('filament.admin.resources.assets.create'))->assertOk();
+        $this->actingAs($admin)->get(route('filament.admin.resources.assets.edit', $asset))->assertOk();
         $this->actingAs($admin)->get(route('filament.admin.resources.assets.view', $asset))
             ->assertOk()->assertSee('Informasi Aset')->assertSee('Lokasi')->assertSee('Legalitas')
             ->assertSee('Detail Aset')->assertSee('Fasilitas')->assertSee('SEO Otomatis')
@@ -186,6 +191,31 @@ class AssetMatchingTest extends TestCase
         $this->actingAs($admin)->get(route('filament.admin.resources.facilities.index'))->assertOk();
         $this->assertFalse(app('router')->has('matching.assets.certificate'));
         $this->assertFalse(app('router')->has('matching.assets.certificate.preview'));
+    }
+
+    public function test_owner_can_edit_asset_without_uploading_new_photos(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Draft);
+        $asset->photos()->create(['path' => 'assets/foto1.jpg', 'sort_order' => 0]);
+
+        $this->actingAs($owner)->put(route('matching.assets.update', $asset), [
+            'asset_category_id' => $asset->asset_category_id,
+            'name' => 'Aset Edit Tanpa Foto Baru',
+            'slug' => 'aset-edit-tanpa-foto-baru',
+            'listing_status' => AssetListingStatus::Available->value,
+            'province' => $asset->province, 'city' => $asset->city,
+            'district' => $asset->district, 'village' => $asset->village,
+            'full_address' => $asset->full_address, 'description' => $asset->description,
+            'area_sqm' => 1500, 'certificate_type' => $asset->certificate_type,
+            'condition' => AssetCondition::Good->value,
+            'utilization_status' => AssetUtilizationStatus::Vacant->value,
+            'objective' => AssetObjective::Sell->value,
+        ])->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertSame('Aset Edit Tanpa Foto Baru', $asset->fresh()->name);
+        $this->assertSame(1, $asset->fresh()->photos()->count());
     }
 
     public function test_public_asset_uses_slug_and_legacy_uuid_redirects_permanently(): void
