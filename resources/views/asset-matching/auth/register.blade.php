@@ -9,9 +9,7 @@
         <div class="mt-6">@include('asset-matching.partials.alerts')</div>
         <form method="POST" action="{{ route('matching.register.store') }}" class="grid gap-5 sm:grid-cols-2">@csrf
             <label class="block text-sm text-gray-300 sm:col-span-2">Nama lengkap<input name="name" value="{{ old('name') }}" required class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
-            <label class="block text-sm text-gray-300">Email<input name="email" type="email" value="{{ old('email') }}" required class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
-            <label class="block text-sm text-gray-300">WhatsApp<input name="whatsapp" value="{{ old('whatsapp') }}" required placeholder="08xxxxxxxxxx" class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
-            <label class="block text-sm text-gray-300 sm:col-span-2">Perusahaan <span class="text-gray-500">(opsional)</span><input name="company" value="{{ old('company') }}" class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
+            <label class="block text-sm text-gray-300 sm:col-span-2">Email<input name="email" type="email" value="{{ old('email') }}" required class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
             <label class="block text-sm text-gray-300">Password<input name="password" type="password" required class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
             <label class="block text-sm text-gray-300">Konfirmasi password<input name="password_confirmation" type="password" required class="mt-2 w-full rounded-xl border border-border-dark bg-background-dark px-4 py-3 text-white"></label>
             <button class="rounded-xl bg-primary px-5 py-3 font-semibold text-background-dark hover:bg-primary-400 sm:col-span-2">Daftar dan masuk</button>

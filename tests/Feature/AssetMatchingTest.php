@@ -27,16 +27,45 @@ class AssetMatchingTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_user_can_register_and_is_logged_in_immediately(): void
+    public function test_user_can_register_then_complete_optional_profile(): void
     {
         $response = $this->post(route('matching.register.store'), [
-            'name' => 'Pemilik Aset', 'email' => 'owner@example.com', 'whatsapp' => '081234567890',
-            'company' => 'PT Contoh', 'password' => 'password123', 'password_confirmation' => 'password123',
+            'name' => 'Pemilik Aset', 'email' => 'owner@example.com',
+            'password' => 'password123', 'password_confirmation' => 'password123',
         ]);
 
-        $response->assertRedirect(route('matching.dashboard'));
+        $response->assertRedirect(route('matching.profile.edit'));
         $this->assertAuthenticated();
-        $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'whatsapp' => '081234567890']);
+        $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'whatsapp' => null, 'company' => null]);
+        $this->get(route('matching.profile.edit'))->assertOk()
+            ->assertSee('Nama perusahaan')->assertSee('Nomor WhatsApp')->assertSee('Lewati');
+
+        $this->put(route('matching.profile.update'), [
+            'company' => 'PT Contoh',
+            'whatsapp' => '081234567890',
+        ])->assertSessionHasNoErrors()->assertRedirect(route('matching.dashboard'));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'owner@example.com',
+            'company' => 'PT Contoh',
+            'whatsapp' => '081234567890',
+        ]);
+    }
+
+    public function test_user_can_skip_optional_profile_and_keep_the_intended_destination(): void
+    {
+        $this->get(route('matching.register', ['redirect' => route('matching.index')]))->assertOk();
+        $this->post(route('matching.register.store'), [
+            'name' => 'Pemilik Aset', 'email' => 'skip-profile@example.com',
+            'password' => 'password123', 'password_confirmation' => 'password123',
+        ])->assertRedirect(route('matching.profile.edit'));
+
+        $this->post(route('matching.profile.skip'))->assertRedirect(route('matching.index'));
+        $this->assertDatabaseHas('users', [
+            'email' => 'skip-profile@example.com',
+            'company' => null,
+            'whatsapp' => null,
+        ]);
     }
 
     public function test_owner_can_submit_draft(): void

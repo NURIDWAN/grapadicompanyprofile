@@ -98,6 +98,9 @@ Route::prefix('capital-connect')->name('matching.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::post('/logout', [AssetMatchingAuthController::class, 'logout'])->name('logout');
+        Route::get('/profil', [AssetMatchingAuthController::class, 'showProfile'])->name('profile.edit');
+        Route::put('/profil', [AssetMatchingAuthController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profil/lewati', [AssetMatchingAuthController::class, 'skipProfile'])->name('profile.skip');
         Route::get('/dashboard', [AssetMatchingController::class, 'dashboard'])->name('dashboard');
         Route::get('/aset-baru', [OwnerAssetController::class, 'create'])->name('assets.create');
         Route::post('/aset-baru', [OwnerAssetController::class, 'store'])->name('assets.store');

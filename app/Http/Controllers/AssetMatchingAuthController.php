@@ -32,15 +32,41 @@ class AssetMatchingAuthController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'email' => ['required', 'email', 'max:100', 'unique:users,email'],
-            'whatsapp' => ['required', 'regex:/^[0-9+()\-\s]{8,20}$/'],
-            'company' => ['nullable', 'string', 'max:100'],
             'password' => ['required', 'confirmed', PasswordRule::min(8)],
         ]);
         $user = User::create($data);
         Auth::login($user);
         $request->session()->regenerate();
+        $intended = $request->session()->pull('url.intended');
+        if ($this->isSafeRedirect($intended)) {
+            $request->session()->put('matching.profile_redirect', $intended);
+        }
 
-        return redirect()->intended(route('matching.dashboard'));
+        return redirect()->route('matching.profile.edit');
+    }
+
+    public function showProfile()
+    {
+        return view('asset-matching.profile.edit');
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $data = $request->validate([
+            'company' => ['nullable', 'string', 'max:100'],
+            'whatsapp' => ['nullable', 'regex:/^[0-9+()\-\s]{8,20}$/'],
+        ]);
+        $request->user()->update([
+            'company' => filled($data['company'] ?? null) ? trim($data['company']) : null,
+            'whatsapp' => filled($data['whatsapp'] ?? null) ? trim($data['whatsapp']) : null,
+        ]);
+
+        return $this->redirectAfterProfile($request)->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    public function skipProfile(Request $request)
+    {
+        return $this->redirectAfterProfile($request)->with('success', 'Profil dapat dilengkapi kapan saja.');
     }
 
     public function login(Request $request)
@@ -102,8 +128,26 @@ class AssetMatchingAuthController extends Controller
     private function rememberSafeRedirect(Request $request): void
     {
         $redirect = $request->string('redirect')->toString();
-        if ($redirect && (str_starts_with($redirect, url('/capital-connect')) || str_starts_with($redirect, url('/capital')) || str_starts_with($redirect, url('/asset-matching')))) {
+        if ($this->isSafeRedirect($redirect)) {
             $request->session()->put('url.intended', $redirect);
         }
+    }
+
+    private function redirectAfterProfile(Request $request)
+    {
+        $redirect = $request->session()->pull('matching.profile_redirect');
+
+        return $this->isSafeRedirect($redirect)
+            ? redirect()->to($redirect)
+            : redirect()->route('matching.dashboard');
+    }
+
+    private function isSafeRedirect(?string $redirect): bool
+    {
+        return filled($redirect) && (
+            str_starts_with($redirect, url('/capital-connect'))
+            || str_starts_with($redirect, url('/capital'))
+            || str_starts_with($redirect, url('/asset-matching'))
+        );
     }
 }
