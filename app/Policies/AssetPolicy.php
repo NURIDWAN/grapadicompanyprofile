@@ -40,7 +40,7 @@ class AssetPolicy
         }
 
         return $asset->owner_id === $user->id
-            && ! in_array($asset->status, [AssetStatus::PendingReview, AssetStatus::Archived], true);
+            && $asset->status !== AssetStatus::Archived;
     }
 
     public function review(User $user): bool

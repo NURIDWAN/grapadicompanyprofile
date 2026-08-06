@@ -77,6 +77,32 @@ class AssetMatchingTest extends TestCase
         $this->assertSame(AssetStatus::PendingReview, $asset->fresh()->status);
     }
 
+    public function test_owner_can_edit_an_asset_while_it_is_pending_review(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::PendingReview);
+        $asset->photos()->create(['path' => 'assets/foto-review.jpg', 'sort_order' => 0]);
+
+        $this->actingAs($owner)->get(route('matching.assets.edit', $asset))->assertOk();
+        $this->actingAs($owner)->putJson(
+            route('matching.assets.update', $asset),
+            $this->validUpdatePayload($asset, ['name' => 'Aset Review Diperbarui'])
+        )->assertOk()->assertJsonPath('redirect', route('matching.assets.edit', $asset));
+
+        $this->assertSame('Aset Review Diperbarui', $asset->fresh()->name);
+        $this->assertSame(AssetStatus::PendingReview, $asset->status);
+    }
+
+    public function test_user_cannot_edit_another_owners_asset(): void
+    {
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $otherUser = User::factory()->create(['whatsapp' => '089876543210']);
+        $asset = $this->makeAsset($owner, AssetStatus::Draft);
+
+        $this->actingAs($otherUser)->get(route('matching.assets.edit', $asset))->assertForbidden();
+    }
+
     public function test_owner_can_create_draft_without_certificate_document_and_with_public_photos(): void
     {
         Storage::fake('public');
