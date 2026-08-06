@@ -85,6 +85,7 @@ class AssetMatchingTest extends TestCase
 
         $this->actingAs($owner)->get(route('matching.assets.create'))->assertOk()
             ->assertSee('Informasi Aset')->assertSee('SEO Otomatis')
+            ->assertSee('Simpan Draft')->assertSee('Langsung Ajukan')
             ->assertDontSee('name="certificate_number"', false)
             ->assertDontSee('name="certificate_file"', false);
 
@@ -103,7 +104,7 @@ class AssetMatchingTest extends TestCase
         ]);
 
         $asset = Asset::where('name', 'Gudang Baru')->firstOrFail();
-        $response->assertRedirect(route('matching.assets.edit', $asset));
+        $response->assertRedirect(route('matching.dashboard'));
         $this->assertSame(AssetStatus::Draft, $asset->status);
         $this->assertFalse(Schema::hasColumn('assets', 'certificate_number'));
         $this->assertFalse(Schema::hasColumn('assets', 'certificate_file'));
@@ -112,6 +113,32 @@ class AssetMatchingTest extends TestCase
         Storage::disk('public')->assertExists($asset->photos()->first()->path);
         $this->assertSame('Tampak depan Gudang Baru', $asset->photos()->first()->alt_text);
         $this->assertSame('4750000.00', $asset->price_per_sqm);
+    }
+
+    public function test_owner_can_submit_asset_directly_from_the_create_form(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $category = AssetCategory::create(['name' => 'Ruko', 'slug' => 'ruko', 'is_active' => true]);
+
+        $response = $this->actingAs($owner)->post(route('matching.assets.store'), [
+            'asset_category_id' => $category->id, 'name' => 'Ruko Langsung Ajukan', 'province' => 'Banten',
+            'slug' => 'ruko-langsung-ajukan', 'listing_status' => AssetListingStatus::Available->value,
+            'city' => 'Tangerang', 'district' => 'Serpong', 'village' => 'Lengkong Gudang',
+            'full_address' => 'Jl. Contoh No. 1', 'description' => 'Ruko siap diajukan untuk proses review.',
+            'area_sqm' => 200, 'certificate_type' => 'HGB',
+            'condition' => AssetCondition::Good->value,
+            'utilization_status' => AssetUtilizationStatus::Vacant->value,
+            'objective' => AssetObjective::Sell->value,
+            'photos' => [UploadedFile::fake()->image('ruko.jpg')],
+            'submission_action' => 'submit',
+        ]);
+
+        $asset = Asset::where('name', 'Ruko Langsung Ajukan')->firstOrFail();
+        $response->assertSessionHasNoErrors()->assertRedirect(route('matching.dashboard'));
+        $this->assertSame(AssetStatus::PendingReview, $asset->status);
+        $this->assertNotNull($asset->submitted_at);
+        Storage::disk('public')->assertExists($asset->photos()->first()->path);
     }
 
     public function test_catalog_only_shows_publicly_listed_assets(): void

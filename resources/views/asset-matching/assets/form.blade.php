@@ -101,7 +101,15 @@
                 <div class="mt-6 space-y-4"><label class="field-label">SEO Title<input id="seo-title-preview" readonly class="form-input cursor-not-allowed text-gray-400" value="{{ $asset->seo_title ?? '' }}"></label><label class="field-label">Meta Description<textarea id="seo-description-preview" readonly rows="3" class="form-input cursor-not-allowed text-gray-400">{{ $asset->meta_description ?? '' }}</textarea></label><p class="text-xs text-gray-500">SEO diperbarui otomatis dari nama, jenis, luas, dan lokasi aset.</p></div>
             </section>
 
-            <div class="flex justify-end gap-3"><a href="{{ route('matching.dashboard') }}" class="rounded-xl border border-border-dark px-6 py-3 text-gray-300">Batal</a><button class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark">{{ $editing ? 'Simpan Perubahan' : 'Simpan Draft' }}</button></div>
+            <div class="flex flex-wrap justify-end gap-3">
+                <a href="{{ route('matching.dashboard') }}" class="rounded-xl border border-border-dark px-6 py-3 text-gray-300">Batal</a>
+                @if($editing)
+                    <button class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark">Simpan Perubahan</button>
+                @else
+                    <button type="submit" name="submission_action" value="draft" class="rounded-xl border border-primary/50 px-6 py-3 font-semibold text-primary hover:bg-primary/10">Simpan Draft</button>
+                    <button type="submit" name="submission_action" value="submit" class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark hover:bg-primary-400">Langsung Ajukan</button>
+                @endif
+            </div>
         </form>
     </div>
 </section>

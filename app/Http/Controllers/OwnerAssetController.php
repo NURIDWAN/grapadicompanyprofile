@@ -28,9 +28,11 @@ class OwnerAssetController extends Controller
         $photos = $data['photos'];
         $photoAltTexts = $data['photo_alt_texts'] ?? [];
         $facilityIds = $data['facilities'] ?? [];
-        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities'], $data['delete_photo_ids']);
+        $submissionAction = $data['submission_action'] ?? 'draft';
+        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities'], $data['delete_photo_ids'], $data['submission_action']);
         $data['owner_id'] = $request->user()->id;
-        $data['status'] = AssetStatus::Draft;
+        $data['status'] = $submissionAction === 'submit' ? AssetStatus::PendingReview : AssetStatus::Draft;
+        $data['submitted_at'] = $submissionAction === 'submit' ? now() : null;
         $asset = DB::transaction(function () use ($data, $photos, $photoAltTexts, $facilityIds) {
             $asset = Asset::create($data);
             foreach ($photos as $index => $photo) {
@@ -45,7 +47,11 @@ class OwnerAssetController extends Controller
             return $asset;
         });
 
-        return redirect()->route('matching.assets.edit', $asset)->with('success', 'Aset tersimpan sebagai draft. Periksa data lalu kirim untuk review.');
+        $message = $submissionAction === 'submit'
+            ? 'Aset berhasil diajukan dan sedang menunggu review Grapadi.'
+            : 'Aset berhasil disimpan sebagai draft.';
+
+        return redirect()->route('matching.dashboard')->with('success', $message);
     }
 
     public function edit(Asset $asset)
@@ -63,7 +69,7 @@ class OwnerAssetController extends Controller
         $photoAltTexts = $data['photo_alt_texts'] ?? [];
         $existingPhotoAlt = $data['existing_photo_alt'] ?? [];
         $facilityIds = $data['facilities'] ?? [];
-        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities']);
+        unset($data['photos'], $data['photo_alt_texts'], $data['existing_photo_alt'], $data['facilities'], $data['submission_action']);
         $deletePhotoIds = $data['delete_photo_ids'] ?? [];
         unset($data['delete_photo_ids']);
         if ($asset->slug_locked_at) {
@@ -154,6 +160,7 @@ class OwnerAssetController extends Controller
             'existing_photo_alt' => ['nullable', 'array'], 'existing_photo_alt.*' => ['nullable', 'string', 'max:180'],
             'delete_photo_ids' => ['nullable', 'array'],
             'delete_photo_ids.*' => ['integer', 'exists:asset_photos,id'],
+            'submission_action' => ['nullable', Rule::in(['draft', 'submit'])],
         ]);
         $remainingPhotos = ($asset?->photos()->count() ?? 0) - $validDeleteCount + count($data['photos'] ?? []);
         if ($remainingPhotos < 1) {
