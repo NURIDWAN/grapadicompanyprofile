@@ -51,6 +51,12 @@ class OwnerAssetController extends Controller
             ? 'Aset berhasil diajukan dan sedang menunggu review Grapadi.'
             : 'Aset berhasil disimpan sebagai draft.';
 
+        if ($request->expectsJson()) {
+            $request->session()->flash('success', $message);
+
+            return response()->json(['redirect' => route('matching.dashboard')]);
+        }
+
         return redirect()->route('matching.dashboard')->with('success', $message);
     }
 
@@ -100,6 +106,12 @@ class OwnerAssetController extends Controller
             }
             $asset->facilities()->sync($facilityIds);
         });
+
+        if ($request->expectsJson()) {
+            $request->session()->flash('success', 'Data aset berhasil diperbarui.');
+
+            return response()->json(['redirect' => route('matching.assets.edit', $asset)]);
+        }
 
         return back()->with('success', 'Data aset berhasil diperbarui.');
     }

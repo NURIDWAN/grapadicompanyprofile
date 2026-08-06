@@ -12,6 +12,10 @@
         </div>
         <p class="mt-3 max-w-3xl text-sm leading-6 text-gray-400">Lengkapi informasi dasar aset untuk memulai proses registrasi. Data yang Anda masukkan akan menjadi profil awal aset dalam sistem.</p>
         <div class="mt-6">@include('asset-matching.partials.alerts')</div>
+        <div id="asset-client-errors" role="alert" class="mt-6 hidden rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-red-200">
+            <p class="font-semibold">Mohon periksa kembali data berikut:</p>
+            <ul class="mt-2 list-disc pl-5 text-sm"></ul>
+        </div>
         @if($editing && $asset->status === \App\Enums\AssetStatus::Published)<div class="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-200">Perubahan akan mengirim aset kembali ke proses review. Slug tetap dikunci agar URL publik tidak berubah.</div>@endif
 
         <form id="asset-form" method="POST" enctype="multipart/form-data" action="{{ $editing ? route('matching.assets.update', $asset) : route('matching.assets.store') }}" class="space-y-6">
@@ -104,7 +108,7 @@
             <div class="flex flex-wrap justify-end gap-3">
                 <a href="{{ route('matching.dashboard') }}" class="rounded-xl border border-border-dark px-6 py-3 text-gray-300">Batal</a>
                 @if($editing)
-                    <button class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark">Simpan Perubahan</button>
+                    <button type="submit" class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark">Simpan Perubahan</button>
                 @else
                     <button type="submit" name="submission_action" value="draft" class="rounded-xl border border-primary/50 px-6 py-3 font-semibold text-primary hover:bg-primary/10">Simpan Draft</button>
                     <button type="submit" name="submission_action" value="submit" class="rounded-xl bg-primary px-6 py-3 font-semibold text-background-dark hover:bg-primary-400">Langsung Ajukan</button>
@@ -120,6 +124,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('asset-form'), clientErrors = document.getElementById('asset-client-errors');
     const name = document.getElementById('asset-name'), slug = document.getElementById('asset-slug'), area = document.getElementById('asset-area'), price = document.getElementById('asset-price');
     let slugTouched = slug.readOnly || slug.value.length > 0;
     const slugify = value => value.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -136,6 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const render=()=>{updateExistingCards();grid.innerHTML='';section.classList.toggle('hidden',!files.length);files.forEach((item,index)=>{const card=document.createElement('div');card.className='overflow-hidden rounded-xl border border-border-dark bg-background-dark';const url=URL.createObjectURL(item.file);card.innerHTML=`<div class="relative"><img src="${url}" alt="Preview" class="h-40 w-full object-cover"><button type="button" class="absolute right-2 top-2 h-8 w-8 rounded-full bg-black/75 text-white">×</button></div><div class="p-3"><p class="truncate text-xs text-gray-400"></p><label class="mt-3 block text-xs text-gray-400">Alt Text<input name="photo_alt_texts[]" maxlength="180" class="form-input !mt-1 !py-2 text-xs"></label></div>`;card.querySelector('p').textContent=item.file.name;card.querySelector('input').value=item.alt;card.querySelector('input').addEventListener('input',e=>item.alt=e.target.value);card.querySelector('button').addEventListener('click',()=>{files.splice(index,1);sync();render()});grid.append(card)});counter.textContent=`${activeExisting()+files.length}/10`;};
     const addFiles=list=>{error.classList.add('hidden');for(const file of list){if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024)continue;if(!files.some(x=>x.file.name===file.name&&x.file.size===file.size))files.push({file,alt:`${name.value || 'Aset'} - Foto ${activeExisting()+files.length+1}`});}const slots=Math.max(0,10-activeExisting());if(files.length>slots){files=files.slice(0,slots);error.textContent='Maksimal 10 foto.';error.classList.remove('hidden')}sync();render()};
     input.addEventListener('change',e=>addFiles([...e.target.files]));checks.forEach(check=>{check.addEventListener('change',render);check.closest('[data-existing-photo]').querySelector('[data-delete-existing-button]').addEventListener('click',()=>{check.checked=!check.checked;check.dispatchEvent(new Event('change'))})});const drop=document.getElementById('asset-photo-dropzone');['dragover','drop'].forEach(eventName=>drop.addEventListener(eventName,e=>{e.preventDefault();if(eventName==='drop')addFiles([...e.dataTransfer.files])}));render();
+
+    const showValidationErrors=errors=>{const list=clientErrors.querySelector('ul');list.innerHTML='';[...new Set(Object.values(errors).flat())].forEach(message=>{const item=document.createElement('li');item.textContent=message;list.append(item)});clientErrors.classList.remove('hidden');clientErrors.scrollIntoView({behavior:'smooth',block:'center'})};
+    form.addEventListener('submit',async event=>{event.preventDefault();clientErrors.classList.add('hidden');const buttons=[...form.querySelectorAll('button[type="submit"]')],submitter=event.submitter,data=new FormData(form);if(submitter?.name)data.set(submitter.name,submitter.value);buttons.forEach(button=>button.disabled=true);try{const response=await fetch(form.action,{method:'POST',body:data,headers:{Accept:'application/json','X-Requested-With':'XMLHttpRequest'}});const payload=await response.json().catch(()=>({}));if(response.ok&&payload.redirect){window.location.assign(payload.redirect);return}if(response.status===422){showValidationErrors(payload.errors||{form:[payload.message||'Data belum valid.']});return}showValidationErrors({form:[payload.message||'Terjadi kesalahan. Silakan coba kembali.']})}catch{showValidationErrors({form:['Koneksi bermasalah. Silakan coba kembali.']})}finally{buttons.forEach(button=>button.disabled=false)}});
 });
 </script>
 @endpush
