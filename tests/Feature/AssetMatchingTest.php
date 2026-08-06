@@ -215,6 +215,47 @@ class AssetMatchingTest extends TestCase
         $this->assertSame(1, $asset->fresh()->photos()->count());
     }
 
+    public function test_owner_can_mark_an_existing_photo_for_deletion_when_saving(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Draft);
+        Storage::disk('public')->put('assets/foto-hapus.jpg', 'foto yang dihapus');
+        Storage::disk('public')->put('assets/foto-tetap.jpg', 'foto yang dipertahankan');
+        $photoToDelete = $asset->photos()->create(['path' => 'assets/foto-hapus.jpg', 'sort_order' => 0]);
+        $photoToKeep = $asset->photos()->create(['path' => 'assets/foto-tetap.jpg', 'sort_order' => 1]);
+
+        $this->actingAs($owner)->get(route('matching.assets.edit', $asset))
+            ->assertOk()
+            ->assertSee('data-delete-existing-button', false)
+            ->assertSee('Hapus');
+
+        $this->actingAs($owner)->put(route('matching.assets.update', $asset), $this->validUpdatePayload($asset, [
+            'delete_photo_ids' => [$photoToDelete->id],
+        ]))->assertSessionHasNoErrors()->assertRedirect();
+
+        $this->assertDatabaseMissing('asset_photos', ['id' => $photoToDelete->id]);
+        $this->assertDatabaseHas('asset_photos', ['id' => $photoToKeep->id]);
+        Storage::disk('public')->assertMissing('assets/foto-hapus.jpg');
+        Storage::disk('public')->assertExists('assets/foto-tetap.jpg');
+    }
+
+    public function test_owner_cannot_delete_the_only_photo_without_a_replacement(): void
+    {
+        Storage::fake('public');
+        $owner = User::factory()->create(['whatsapp' => '081234567890']);
+        $asset = $this->makeAsset($owner, AssetStatus::Draft);
+        Storage::disk('public')->put('assets/foto-satu-satunya.jpg', 'foto utama');
+        $photo = $asset->photos()->create(['path' => 'assets/foto-satu-satunya.jpg', 'sort_order' => 0]);
+
+        $this->actingAs($owner)->put(route('matching.assets.update', $asset), $this->validUpdatePayload($asset, [
+            'delete_photo_ids' => [$photo->id],
+        ]))->assertSessionHasErrors('photos');
+
+        $this->assertDatabaseHas('asset_photos', ['id' => $photo->id]);
+        Storage::disk('public')->assertExists('assets/foto-satu-satunya.jpg');
+    }
+
     public function test_public_asset_uses_slug_and_legacy_uuid_redirects_permanently(): void
     {
         $owner = User::factory()->create(['whatsapp' => '081234567890']);
@@ -276,5 +317,26 @@ class AssetMatchingTest extends TestCase
             'objective' => AssetObjective::Sell, 'status' => $status, 'published_at' => $status === AssetStatus::Published ? now() : null,
             'slug_locked_at' => $status === AssetStatus::Published ? now() : null,
         ], ...$overrides]);
+    }
+
+    private function validUpdatePayload(Asset $asset, array $overrides = []): array
+    {
+        return [...[
+            'asset_category_id' => $asset->asset_category_id,
+            'name' => $asset->name,
+            'slug' => $asset->slug,
+            'listing_status' => AssetListingStatus::Available->value,
+            'province' => $asset->province,
+            'city' => $asset->city,
+            'district' => $asset->district,
+            'village' => $asset->village,
+            'full_address' => $asset->full_address,
+            'description' => $asset->description,
+            'area_sqm' => $asset->area_sqm,
+            'certificate_type' => $asset->certificate_type,
+            'condition' => AssetCondition::Good->value,
+            'utilization_status' => AssetUtilizationStatus::Vacant->value,
+            'objective' => AssetObjective::Sell->value,
+        ], ...$overrides];
     }
 }
