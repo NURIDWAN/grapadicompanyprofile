@@ -167,16 +167,16 @@
                     <p class="text-[10px] font-semibold uppercase tracking-[.22em] text-primary">Mengapa Capital Connect?</p>
                     <div class="mt-4 divide-y divide-[#1c3a2b]">
                         <div class="py-4 first:pt-0">
-                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">verified_user</span><div><h3 class="font-display text-lg font-semibold text-white">Data melalui screening</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Kelengkapan data, legalitas dasar, dan kualitas foto diperiksa sebelum dipublikasikan.</p></div></div>
+                            <div class="grid grid-cols-[24px_minmax(0,1fr)] items-start gap-3"><span class="material-icons-outlined mt-0.5 w-6 text-lg text-primary">verified_user</span><div class="min-w-0 text-left"><h3 class="font-display text-lg font-semibold text-white">Data melalui screening</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Kelengkapan data, legalitas dasar, dan kualitas foto diperiksa sebelum dipublikasikan.</p></div></div>
                         </div>
                         <div class="py-4">
-                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">handshake</span><div><h3 class="font-display text-lg font-semibold text-white">Terhubung secara terarah</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Minat Anda diteruskan ke tim Grapadi untuk proses tindak lanjut yang relevan.</p></div></div>
+                            <div class="grid grid-cols-[24px_minmax(0,1fr)] items-start gap-3"><span class="material-icons-outlined mt-0.5 w-6 text-lg text-primary">handshake</span><div class="min-w-0 text-left"><h3 class="font-display text-lg font-semibold text-white">Terhubung secara terarah</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Minat Anda diteruskan ke tim Grapadi untuk proses tindak lanjut yang relevan.</p></div></div>
                         </div>
                         <div class="py-4">
-                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">lock</span><div><h3 class="font-display text-lg font-semibold text-white">Data sensitif aman</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Nomor sertifikat dan identitas pemilik tidak ditampilkan publik.</p></div></div>
+                            <div class="grid grid-cols-[24px_minmax(0,1fr)] items-start gap-3"><span class="material-icons-outlined mt-0.5 w-6 text-lg text-primary">lock</span><div class="min-w-0 text-left"><h3 class="font-display text-lg font-semibold text-white">Data sensitif aman</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Nomor sertifikat dan identitas pemilik tidak ditampilkan publik.</p></div></div>
                         </div>
                         <div class="py-4">
-                            <div class="flex gap-3"><span class="material-icons-outlined mt-0.5 text-lg text-primary">monitoring</span><div><h3 class="font-display text-lg font-semibold text-white">Pendampingan Grapadi</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Tim kami membantu menjembatani komunikasi awal antara para pihak.</p></div></div>
+                            <div class="grid grid-cols-[24px_minmax(0,1fr)] items-start gap-3"><span class="material-icons-outlined mt-0.5 w-6 text-lg text-primary">monitoring</span><div class="min-w-0 text-left"><h3 class="font-display text-lg font-semibold text-white">Pendampingan Grapadi</h3><p class="mt-1 text-[11px] leading-5 text-gray-500">Tim kami membantu menjembatani komunikasi awal antara para pihak.</p></div></div>
                         </div>
                     </div>
 
